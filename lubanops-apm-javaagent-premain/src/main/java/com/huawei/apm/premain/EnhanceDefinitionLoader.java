@@ -1,5 +1,6 @@
 package com.huawei.apm.premain;
 
+import com.huawei.apm.bootstrap.agent.ExtAgentManager;
 import com.huawei.apm.bootstrap.definition.EnhanceDefinition;
 import com.huawei.apm.bootstrap.matcher.ClassMatcher;
 import com.huawei.apm.bootstrap.matcher.NameMatcher;
@@ -26,8 +27,8 @@ import static net.bytebuddy.matcher.ElementMatchers.not;
 enum EnhanceDefinitionLoader {
     INSTANCE;
 
-    private final Map<String, LinkedList<EnhanceDefinition>> nameDefinitions =
-        new HashMap<String, LinkedList<EnhanceDefinition>>();
+    private final Map<String, List<EnhanceDefinition>> nameDefinitions =
+        new HashMap<String, List<EnhanceDefinition>>();
 
     private final List<EnhanceDefinition> nonNameDefinitions = new LinkedList<EnhanceDefinition>();
 
@@ -43,6 +44,7 @@ enum EnhanceDefinitionLoader {
     }
 
     public void load() {
+        initExtAgent();
         // 加载插件
         for (EnhanceDefinition definition : loadEnhanceDefinition()) {
             ClassMatcher classMatcher = definition.enhanceClass();
@@ -51,7 +53,7 @@ enum EnhanceDefinitionLoader {
             }
             if (classMatcher instanceof NameMatcher) {
                 String className = ((NameMatcher) classMatcher).getClassName();
-                LinkedList<EnhanceDefinition> definitions = nameDefinitions.get(className);
+                List<EnhanceDefinition> definitions = nameDefinitions.get(className);
                 if (definitions == null) {
                     definitions = new LinkedList<EnhanceDefinition>();
                     nameDefinitions.put(className, definitions);
@@ -66,6 +68,11 @@ enum EnhanceDefinitionLoader {
             resolveNamedListener(listener);
             initNamedListener(listener);
         }
+    }
+
+    private void initExtAgent() {
+        nameDefinitions.putAll(ExtAgentManager.getNamedEnhancers());
+        nonNameDefinitions.addAll(ExtAgentManager.getNonNamedEnhancers());
     }
 
     private void initNamedListener(Listener listener) {
@@ -125,7 +132,7 @@ enum EnhanceDefinitionLoader {
     }
 
     public List<EnhanceDefinition> findDefinitions(TypeDescription typeDescription) {
-        LinkedList<EnhanceDefinition> matchDefinitions = nameDefinitions.get(typeDescription.getTypeName());
+        List<EnhanceDefinition> matchDefinitions = nameDefinitions.get(typeDescription.getTypeName());
         if (matchDefinitions == null) {
             matchDefinitions = new LinkedList<EnhanceDefinition>();
         }

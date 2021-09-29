@@ -2,22 +2,20 @@
  * Copyright (c) Huawei Technologies Co., Ltd. 2021-2021. All rights reserved.
  */
 
-package com.huawei.apm.bootstrap.definition;
+package com.huawei.apm.agent;
 
+import com.huawei.apm.bootstrap.definition.EnhanceDefinition;
+import com.huawei.apm.bootstrap.definition.MethodInterceptPoint;
 import com.huawei.apm.bootstrap.matcher.ClassMatcher;
-import com.huawei.apm.bootstrap.matcher.ClassMatcherAdapterFactory;
 import com.huawei.apm.bootstrap.matcher.NameMatcher;
 import com.lubanops.apm.bootstrap.log.LogFactory;
 import org.apache.skywalking.apm.agent.core.plugin.AbstractClassEnhancePluginDefine;
 import org.apache.skywalking.apm.agent.core.plugin.interceptor.ConstructorInterceptPoint;
 import org.apache.skywalking.apm.agent.core.plugin.interceptor.InstanceMethodsInterceptPoint;
 import org.apache.skywalking.apm.agent.core.plugin.interceptor.StaticMethodsInterceptPoint;
-import org.apache.skywalking.apm.agent.core.plugin.interceptor.enhance.StaticMethodsAroundInterceptor;
 import org.apache.skywalking.apm.agent.core.plugin.match.ClassMatch;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Locale;
 import java.util.logging.Logger;
 

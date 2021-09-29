@@ -1,5 +1,6 @@
 package com.huawei.apm.enhance;
 
+import com.huawei.apm.bootstrap.agent.ExtAgentManager;
 import com.huawei.apm.bootstrap.interceptors.Interceptor;
 import com.huawei.apm.classloader.ClassLoaderManager;
 
@@ -90,6 +91,10 @@ public class InterceptorLoader {
                 // noinspection unchecked
                 return (T) clazz.newInstance();
             } else {
+                final Interceptor newInterceptor = ExtAgentManager.createInterceptor(clazz);
+                if (newInterceptor != null){
+                    return (T) newInterceptor;
+                }
                 throw new EnhanceException("Unmatched interceptor type :[" + interceptor + "].");
             }
         } catch (InstantiationException e) {

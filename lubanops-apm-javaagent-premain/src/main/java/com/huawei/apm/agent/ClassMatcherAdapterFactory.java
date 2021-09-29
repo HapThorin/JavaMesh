@@ -2,7 +2,9 @@
  * Copyright (c) Huawei Technologies Co., Ltd. 2021-2021. All rights reserved.
  */
 
-package com.huawei.apm.bootstrap.matcher;
+package com.huawei.apm.agent;
+
+import java.lang.reflect.Method;
 
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
@@ -10,6 +12,10 @@ import net.bytebuddy.matcher.ElementMatcher;
 import org.apache.skywalking.apm.agent.core.plugin.match.ClassMatch;
 import org.apache.skywalking.apm.agent.core.plugin.match.IndirectMatch;
 import org.apache.skywalking.apm.agent.core.plugin.match.NameMatch;
+
+import com.huawei.apm.bootstrap.matcher.ClassMatcher;
+import com.huawei.apm.bootstrap.matcher.NameMatcher;
+import com.huawei.apm.bootstrap.matcher.NonNameMatcher;
 
 /**
  * <p>提供一个静态方法{@link ClassMatcherAdapterFactory#adapter(ClassMatch)},用于将skyWalking中的 {@link ClassMatch} 转换成 {@link ClassMatcher}</p>

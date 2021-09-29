@@ -27,15 +27,16 @@
         <dependency.clean.skip.flag>${dependency.skip.flag}</dependency.clean.skip.flag>
         <shade.common.prefix>com.huawei</shade.common.prefix>
         <shade.distinct.prefix>${artifactId}</shade.distinct.prefix>
+        <shade.bytebuddy.prefix>${shade.common.prefix}</shade.bytebuddy.prefix>
     </properties>
     <modules>
         <module>lubanops-apm-javaagent-bootstrap</module>
         <module>lubanops-apm-javaagent-premain</module>
-        <module>lubanops-apm-javaagent-integration</module>
-        <module>lubanops-apm-javaagent-core</module>
+<!--        <module>lubanops-apm-javaagent-integration</module>-->
+<!--        <module>lubanops-apm-javaagent-core</module>-->
         <module>plugins</module>
         <module>lubanops-apm-javaagent-packaging</module>
-        <module>ApmService</module>
+<!--        <module>ApmService</module>-->
     </modules>
     <dependencyManagement>
         <dependencies>
@@ -157,6 +158,7 @@
                 <commons-lang3.version>3.12.0</commons-lang3.version>
                 <guice.version>4.1.0</guice.version>
                 <Java-WebSocket.version>1.5.1</Java-WebSocket.version>
+                <shade.bytebuddy.prefix>org.apache.skywalking.apm.dependencies</shade.bytebuddy.prefix>
             </properties>
             <activation>
                 <activeByDefault>true</activeByDefault>
@@ -213,7 +215,7 @@
                             </relocation>
                             <relocation>
                                 <pattern>net.bytebuddy</pattern>
-                                <shadedPattern>${shade.common.prefix}.net.bytebuddy</shadedPattern>
+                                <shadedPattern>${shade.bytebuddy.prefix}.net.bytebuddy</shadedPattern>
                             </relocation>
                         </relocations>
                     </configuration>

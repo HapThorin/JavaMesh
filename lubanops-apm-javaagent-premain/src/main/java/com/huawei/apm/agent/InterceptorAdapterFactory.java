@@ -2,9 +2,13 @@
  * Copyright (c) Huawei Technologies Co., Ltd. 2021-2021. All rights reserved.
  */
 
-package com.huawei.apm.bootstrap.interceptors;
+package com.huawei.apm.agent;
 
 import com.huawei.apm.bootstrap.common.BeforeResult;
+import com.huawei.apm.bootstrap.interceptors.ConstructorInterceptor;
+import com.huawei.apm.bootstrap.interceptors.InstanceMethodInterceptor;
+import com.huawei.apm.bootstrap.interceptors.Interceptor;
+import com.huawei.apm.bootstrap.interceptors.StaticMethodInterceptor;
 
 import org.apache.skywalking.apm.agent.core.plugin.interceptor.enhance.EnhancedInstance;
 import org.apache.skywalking.apm.agent.core.plugin.interceptor.enhance.InstanceConstructorInterceptor;
@@ -13,7 +17,6 @@ import org.apache.skywalking.apm.agent.core.plugin.interceptor.enhance.MethodInt
 import org.apache.skywalking.apm.agent.core.plugin.interceptor.enhance.StaticMethodsAroundInterceptor;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
 
 /**
  * <p>将skyWalking的拦截器定义{@link StaticMethodsAroundInterceptor}, {@link InstanceConstructorInterceptor}, {@link InstanceMethodsAroundInterceptor}

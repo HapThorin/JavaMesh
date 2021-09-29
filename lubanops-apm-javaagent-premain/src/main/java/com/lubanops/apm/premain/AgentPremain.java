@@ -1,30 +1,12 @@
 package com.lubanops.apm.premain;
 
-import com.huawei.apm.bootstrap.config.ConfigLoader;
-import com.huawei.apm.bootstrap.serialize.SerializerHolder;
-import com.huawei.apm.classloader.ClassLoaderManager;
-import com.huawei.apm.classloader.PluginClassLoader;
-import com.huawei.apm.premain.BootstrapEnhance;
-import com.huawei.apm.premain.ByteBuddyAgentBuilder;
-import com.huawei.apm.premain.NoneNamedListenerBuilder;
-import com.lubanops.apm.bootstrap.commons.LubanApmConstants;
-import com.lubanops.apm.bootstrap.log.LogFactory;
-import com.lubanops.apm.bootstrap.log.LogPathUtils;
-import com.lubanops.apm.premain.agent.AgentStatus;
-import com.lubanops.apm.premain.agent.ArgumentBuilder;
-import com.lubanops.apm.premain.classloader.LopsUrlClassLoader;
-import com.lubanops.apm.premain.log.CollectorLogFactory;
-import com.lubanops.apm.premain.utils.LibPathUtils;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
-import java.security.AccessController;
+import java.net.URLClassLoader;
 import java.security.CodeSource;
-import java.security.PrivilegedAction;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +14,24 @@ import java.util.Map;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.lubanops.apm.bootstrap.commons.LubanApmConstants;
+import com.lubanops.apm.bootstrap.log.LogFactory;
+import com.lubanops.apm.bootstrap.log.LogPathUtils;
+import com.lubanops.apm.premain.agent.AgentStatus;
+import com.lubanops.apm.premain.agent.ArgumentBuilder;
+import com.lubanops.apm.premain.log.CollectorLogFactory;
+import com.lubanops.apm.premain.utils.LibPathUtils;
+
+import com.huawei.apm.bootstrap.agent.ExtAgentManager;
+import com.huawei.apm.bootstrap.config.ConfigLoader;
+import com.huawei.apm.bootstrap.definition.EnhanceDefinition;
+import com.huawei.apm.bootstrap.serialize.SerializerHolder;
+import com.huawei.apm.classloader.ClassLoaderManager;
+import com.huawei.apm.classloader.PluginClassLoader;
+import com.huawei.apm.premain.BootstrapEnhance;
+import com.huawei.apm.premain.ByteBuddyAgentBuilder;
+import com.huawei.apm.premain.NoneNamedListenerBuilder;
 
 public class AgentPremain {
 
@@ -47,6 +47,19 @@ public class AgentPremain {
 
     @SuppressWarnings("rawtypes")
     public static void premain(String agentArgs, Instrumentation instrumentation) {
+//        try {
+//            final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+//            final Method addURL = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
+//            addURL.setAccessible(true);
+//            addURL.invoke(classLoader, new File(
+//                    "D:\\workplace\\other\\skywalking\\dist\\apache-skywalking-apm-bin\\agent\\skywalking-agent.jar")
+//                    .toURI().toURL());
+//            final Class<?> skyWalkingAgent = classLoader.loadClass("org.apache.skywalking.apm.agent.SkyWalkingAgent");
+//            final Method premain = skyWalkingAgent.getDeclaredMethod("premain", String.class, Instrumentation.class);
+//            premain.invoke(null, agentArgs, instrumentation);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
         try {
             if (AgentStatus.STOPPED.equals(agentStatus)) {
                 agentStatus = AgentStatus.LOADING;
@@ -60,9 +73,11 @@ public class AgentPremain {
                 addAgentPath(argsMap);
                 // 初始化序列化器
                 SerializerHolder.initialize(PluginClassLoader.getDefault());
-                ClassLoader parent = Thread.currentThread().getContextClassLoader();
+                ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+                ClassLoader spiLoader = ClassLoaderManager.getTargetClassLoader(contextClassLoader);
                 // 配置初始化
-                ConfigLoader.initialize(agentArgs, ClassLoaderManager.getTargetClassLoader(parent));
+                ConfigLoader.initialize(agentArgs, spiLoader);
+                ExtAgentManager.init(contextClassLoader, spiLoader, agentArgs, instrumentation);
                 // 针对NoneNamedListener初始化增强
                 NoneNamedListenerBuilder.initialize(instrumentation);
                 // 初始化byte buddy

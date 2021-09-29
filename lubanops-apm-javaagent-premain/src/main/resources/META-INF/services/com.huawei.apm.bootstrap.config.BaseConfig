@@ -1,1 +1,2 @@
+com.huawei.apm.bootstrap.agent.ExtAgentConfig
 com.huawei.apm.config.InterceptorChainConfig

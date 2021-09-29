@@ -210,7 +210,7 @@ public class CommonLoadConfigStrategy implements LoadConfigStrategy<Properties> 
     /**
      * 将配置信息字符串转换为List，需要注意以下内容：
      * <pre>
-     *     1.List的数据类型必须可被{@link #toBaseType}转换
+     *     1.List的数据类型必须可被{@link #toBaseType}转换，空值跳过
      *     2.配置信息字符串形如：{@code value,value1,value2}
      *     3.返回的List为不可变List，不要尝试修改配置中List的内容
      * </pre>
@@ -223,7 +223,11 @@ public class CommonLoadConfigStrategy implements LoadConfigStrategy<Properties> 
     private <R> List<R> toListType(String configStr, Class<R> type) {
         final List<R> result = new ArrayList<R>();
         for (String configSlice : configStr.split(",")) {
-            result.add(toBaseType(configSlice.trim(), type));
+            final R obj = toBaseType(configSlice.trim(), type);
+            // todo
+            if (obj != null) {
+                result.add(obj);
+            }
         }
         return Collections.unmodifiableList(result);
     }
@@ -231,7 +235,7 @@ public class CommonLoadConfigStrategy implements LoadConfigStrategy<Properties> 
     /**
      * 将配置信息字符串转换为Map，需要注意以下内容：
      * <pre>
-     *     1.Map的键值类型必须可被{@link #toBaseType}转换
+     *     1.Map的键值类型必须可被{@link #toBaseType}转换，空值跳过
      *     2.配置信息字符串形如：{@code key:value,key2:value2}
      *     3.如果{@code :}分割的键值对字符串数组长度不为2时，将跳过该键值对
      *     4.如果存在相同的键，后者将覆盖前者
@@ -250,9 +254,20 @@ public class CommonLoadConfigStrategy implements LoadConfigStrategy<Properties> 
         for (String kvSlice : configStr.split(",")) {
             final String[] kvEntry = kvSlice.trim().split(":");
             if (kvEntry.length != 2) {
+                // todo
                 continue;
             }
-            result.put(toBaseType(kvEntry[0].trim(), keyType), toBaseType(kvEntry[1].trim(), valueType));
+            final K key = toBaseType(kvEntry[0].trim(), keyType);
+            if (key == null) {
+                // todo
+                continue;
+            }
+            final V value = toBaseType(kvEntry[1].trim(), valueType);
+            if (value == null) {
+                // todo
+                continue;
+            }
+            result.put(key, value);
         }
         return Collections.unmodifiableMap(result);
     }
