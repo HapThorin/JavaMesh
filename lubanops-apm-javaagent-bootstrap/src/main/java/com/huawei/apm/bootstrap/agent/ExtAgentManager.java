@@ -6,7 +6,6 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,36 +74,25 @@ public abstract class ExtAgentManager {
         }
     }
 
-    public static Map<String, List<EnhanceDefinition>> getNamedEnhancers() {
+    public static void uniteNamedEnhancers(Map<String, List<EnhanceDefinition>> nameDefinitions) {
         if (!isInit) {
             // todo
-            return Collections.emptyMap();
+            return;
         }
         final Map<String, List<EnhanceDefinition>> result = new HashMap<String, List<EnhanceDefinition>>();
         for (ExtAgentLoader loader : extAgentLoaders) {
-            for (Map.Entry<String, List<EnhanceDefinition>> entry : loader.getNamedEnhancers().entrySet()) {
-                final String key = entry.getKey();
-                final List<EnhanceDefinition> parsedList = result.get(key);
-                if (parsedList == null) {
-                    result.put(key, entry.getValue());
-                } else {
-                    parsedList.addAll(entry.getValue());
-                }
-            }
+            loader.uniteNamedEnhancers(nameDefinitions);
         }
-        return result;
     }
 
-    public static List<EnhanceDefinition> getNonNamedEnhancers() {
+    public static void uniteNonNamedEnhancers(List<EnhanceDefinition> nonNameDefinitions) {
         if (!isInit) {
             // todo
-            return Collections.emptyList();
+            return;
         }
-        final List<EnhanceDefinition> result = new ArrayList<EnhanceDefinition>();
         for (ExtAgentLoader loader : extAgentLoaders) {
-            result.addAll(loader.getNonNamedEnhancers());
+            loader.getNonNamedEnhancers(nonNameDefinitions);
         }
-        return result;
     }
 
     public static Interceptor createInterceptor(Class<?> cls) {

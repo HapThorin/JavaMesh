@@ -2,9 +2,7 @@ package com.huawei.apm.agent;
 
 import java.lang.instrument.Instrumentation;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -51,33 +49,33 @@ public class SkyWalkingAgentLoader implements ExtAgentLoader {
     }
 
     @Override
-    public Map<String, List<EnhanceDefinition>> getNamedEnhancers() {
+    public void uniteNamedEnhancers(Map<String, List<EnhanceDefinition>> nameDefinitions) {
         if (SkyWalkingAgentLoader.pluginFinder == null) {
-            return Collections.emptyMap();
+            return;
         }
         final Map<?, ?> nameMatchDefineMap = getNameMatchDefineMap();
         if (nameMatchDefineMap.isEmpty()) {
-            return Collections.emptyMap();
+            return;
         }
-        final Map<String, List<EnhanceDefinition>> result = new HashMap<String, List<EnhanceDefinition>>();
         for (Map.Entry<?, ?> entry : nameMatchDefineMap.entrySet()) {
             final Object key = entry.getKey();
             if (!(key instanceof String)) {
+                continue;
+            }
+            final List<EnhanceDefinition> enhanceDefinitions = nameDefinitions.get((String) key);
+            if (enhanceDefinitions == null) {
                 continue;
             }
             final Object nameMatchDefineList = entry.getValue();
             if (!(nameMatchDefineList instanceof List)) {
                 continue;
             }
-            final List<EnhanceDefinition> enhancerList = new ArrayList<EnhanceDefinition>();
             for (Object nameMatchDefine : (List<?>) nameMatchDefineList) {
                 if (nameMatchDefine instanceof AbstractClassEnhancePluginDefine) {
-                    enhancerList.add(parseEnhancer((AbstractClassEnhancePluginDefine) nameMatchDefine));
+                    enhanceDefinitions.add(parseEnhancer((AbstractClassEnhancePluginDefine) nameMatchDefine));
                 }
             }
-            result.put((String) key, enhancerList);
         }
-        return result;
     }
 
     private Map<?, ?> getNameMatchDefineMap() {
@@ -99,21 +97,21 @@ public class SkyWalkingAgentLoader implements ExtAgentLoader {
     }
 
     @Override
-    public List<EnhanceDefinition> getNonNamedEnhancers() {
+    public void getNonNamedEnhancers(List<EnhanceDefinition> nonNameDefinitions) {
         if (SkyWalkingAgentLoader.pluginFinder == null) {
-            return Collections.emptyList();
+            return;
         }
         final List<?> signatureMatchDefineList = getSignatureMatchDefineList();
         if (signatureMatchDefineList.isEmpty()) {
-            return Collections.emptyList();
+            return;
         }
-        final List<EnhanceDefinition> result = new ArrayList<EnhanceDefinition>();
         for (Object signatureMatchDefine : signatureMatchDefineList) {
             if (signatureMatchDefine instanceof AbstractClassEnhancePluginDefine) {
-                result.add(parseEnhancer((AbstractClassEnhancePluginDefine) signatureMatchDefine));
+                final EnhanceDefinition enhanceDefinition =
+                        parseEnhancer((AbstractClassEnhancePluginDefine) signatureMatchDefine);
+                // todo 如何判定相关
             }
         }
-        return result;
     }
 
     @Override

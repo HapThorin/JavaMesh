@@ -1,14 +1,5 @@
 package com.huawei.apm.premain;
 
-import com.huawei.apm.bootstrap.agent.ExtAgentManager;
-import com.huawei.apm.bootstrap.definition.EnhanceDefinition;
-import com.huawei.apm.bootstrap.matcher.ClassMatcher;
-import com.huawei.apm.bootstrap.matcher.NameMatcher;
-import com.huawei.apm.bootstrap.matcher.NonNameMatcher;
-import com.lubanops.apm.bootstrap.Listener;
-import net.bytebuddy.description.type.TypeDescription;
-import net.bytebuddy.matcher.ElementMatcher;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -17,34 +8,41 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
 
+import com.lubanops.apm.bootstrap.Listener;
+import net.bytebuddy.description.type.TypeDescription;
+import net.bytebuddy.matcher.ElementMatcher;
+
+import com.huawei.apm.bootstrap.agent.ExtAgentManager;
+import com.huawei.apm.bootstrap.definition.EnhanceDefinition;
+import com.huawei.apm.bootstrap.matcher.ClassMatcher;
+import com.huawei.apm.bootstrap.matcher.NameMatcher;
+import com.huawei.apm.bootstrap.matcher.NonNameMatcher;
+
 import static net.bytebuddy.matcher.ElementMatchers.isInterface;
 import static net.bytebuddy.matcher.ElementMatchers.not;
 
 /**
- * 插件加载器
- * 加载NamedListener以及EnhanceDefinition插件
+ * 插件加载器 加载NamedListener以及EnhanceDefinition插件
  */
 enum EnhanceDefinitionLoader {
     INSTANCE;
 
     private final Map<String, List<EnhanceDefinition>> nameDefinitions =
-        new HashMap<String, List<EnhanceDefinition>>();
+            new HashMap<String, List<EnhanceDefinition>>();
 
     private final List<EnhanceDefinition> nonNameDefinitions = new LinkedList<EnhanceDefinition>();
 
     /**
-     * key : 增强类
-     * value: 拦截器列表
+     * key : 增强类 value: 拦截器列表
      */
     private final Map<String, LinkedList<Listener>> originMatchNamedListeners =
-        new HashMap<String, LinkedList<Listener>>();
+            new HashMap<String, LinkedList<Listener>>();
 
     EnhanceDefinitionLoader() {
         load();
     }
 
     public void load() {
-        initExtAgent();
         // 加载插件
         for (EnhanceDefinition definition : loadEnhanceDefinition()) {
             ClassMatcher classMatcher = definition.enhanceClass();
@@ -68,11 +66,12 @@ enum EnhanceDefinitionLoader {
             resolveNamedListener(listener);
             initNamedListener(listener);
         }
+        initExtAgent();
     }
 
     private void initExtAgent() {
-        nameDefinitions.putAll(ExtAgentManager.getNamedEnhancers());
-        nonNameDefinitions.addAll(ExtAgentManager.getNonNamedEnhancers());
+        ExtAgentManager.uniteNamedEnhancers(nameDefinitions);
+        ExtAgentManager.uniteNonNamedEnhancers(nonNameDefinitions);
     }
 
     private void initNamedListener(Listener listener) {
@@ -118,13 +117,13 @@ enum EnhanceDefinitionLoader {
 
     public ElementMatcher<TypeDescription> buildMatch() {
         ElementMatcher.Junction<TypeDescription> junction =
-            new ElementMatcher.Junction.AbstractBase<TypeDescription>() {
-                @Override
-                public boolean matches(TypeDescription target) {
-                    return nameDefinitions.containsKey(target.getActualName())
-                            || originMatchNamedListeners.containsKey(target.getActualName());
-                }
-            };
+                new ElementMatcher.Junction.AbstractBase<TypeDescription>() {
+                    @Override
+                    public boolean matches(TypeDescription target) {
+                        return nameDefinitions.containsKey(target.getActualName())
+                                || originMatchNamedListeners.containsKey(target.getActualName());
+                    }
+                };
         for (EnhanceDefinition nonNameDefinition : nonNameDefinitions) {
             junction = junction.or(((NonNameMatcher) nonNameDefinition.enhanceClass()).buildJunction());
         }
