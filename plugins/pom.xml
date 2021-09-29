@@ -18,7 +18,6 @@
     <modules>
 <!--        <module>flowcontrol-plugin</module>-->
 <!--        <module>kafka-reporter-plugin</module>-->
-        <module>dummy-plugin-test</module>
     </modules>
     <build>
         <plugins>
