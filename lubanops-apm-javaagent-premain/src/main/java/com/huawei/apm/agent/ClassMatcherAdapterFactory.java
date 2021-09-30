@@ -4,8 +4,6 @@
 
 package com.huawei.apm.agent;
 
-import java.lang.reflect.Method;
-
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 

@@ -6,7 +6,6 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
@@ -20,12 +19,7 @@ public abstract class ExtAgentManager {
 
     private static final List<ExtAgentLoader> extAgentLoaders = new ArrayList<ExtAgentLoader>();
 
-    public static void init(ClassLoader contextClassLoader, ClassLoader spiLoader, String agentArgs,
-            Instrumentation instrumentation) {
-        if (!(contextClassLoader instanceof URLClassLoader)) {
-            // todo
-            return;
-        }
+    public static void init(ClassLoader spiLoader, String agentArgs, Instrumentation instrumentation) {
         final ExtAgentConfig config = ConfigLoader.getConfig(ExtAgentConfig.class);
         if (!config.isLoadExtAgent()) {
             return;
@@ -79,7 +73,6 @@ public abstract class ExtAgentManager {
             // todo
             return;
         }
-        final Map<String, List<EnhanceDefinition>> result = new HashMap<String, List<EnhanceDefinition>>();
         for (ExtAgentLoader loader : extAgentLoaders) {
             loader.uniteNamedEnhancers(nameDefinitions);
         }
