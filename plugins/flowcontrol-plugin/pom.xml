@@ -201,7 +201,7 @@
                                 </relocation>
                                 <relocation>
                                     <pattern>net.bytebuddy</pattern>
-                                    <shadedPattern>${shade.bytebuddy.prefix}.net.bytebuddy</shadedPattern>
+                                    <shadedPattern>${shade.common.prefix}.net.bytebuddy</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <excludes>
