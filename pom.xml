@@ -17,26 +17,35 @@
         <os.plugin.version>1.5.0.Final</os.plugin.version>
         <protubuf.plugin.version>0.5.1</protubuf.plugin.version>
         <mockito-core.version>3.9.0</mockito-core.version>
+
         <javaagent.dir>${pom.basedir}/..</javaagent.dir>
+
         <package.temp.dir>lubanops-apm-javaagent-packaging/temp</package.temp.dir>
         <package.relative.dir>${project.artifactId}</package.relative.dir>
         <package.dir>${javaagent.dir}/${package.temp.dir}/${package.relative.dir}</package.dir>
         <package.clean.skip.flag>false</package.clean.skip.flag>
+
         <dependency.skip.flag>true</dependency.skip.flag>
         <dependency.dir>${javaagent.dir}/${package.temp.dir}/lib</dependency.dir>
         <dependency.clean.skip.flag>${dependency.skip.flag}</dependency.clean.skip.flag>
+
         <shade.common.prefix>com.huawei</shade.common.prefix>
         <shade.distinct.prefix>${artifactId}</shade.distinct.prefix>
-        <shade.bytebuddy.prefix>${shade.common.prefix}</shade.bytebuddy.prefix>
+
+        <buffered.shade.skip.flag>true</buffered.shade.skip.flag>
+        <buffered.shade.agent.dir>${javaagent.dir}/${package.temp.dir}/agent</buffered.shade.agent.dir>
+        <!-- skywalking agent目录 -->
+        <skywalking.source.dir></skywalking.source.dir>
+        <skywalking.target.dir>${buffered.shade.agent.dir}/skywalking</skywalking.target.dir>
     </properties>
     <modules>
         <module>lubanops-apm-javaagent-bootstrap</module>
         <module>lubanops-apm-javaagent-premain</module>
-<!--        <module>lubanops-apm-javaagent-integration</module>-->
-<!--        <module>lubanops-apm-javaagent-core</module>-->
+        <module>lubanops-apm-javaagent-integration</module>
+        <module>lubanops-apm-javaagent-core</module>
         <module>plugins</module>
         <module>lubanops-apm-javaagent-packaging</module>
-<!--        <module>ApmService</module>-->
+        <module>ApmService</module>
     </modules>
     <dependencyManagement>
         <dependencies>
@@ -158,7 +167,6 @@
                 <commons-lang3.version>3.12.0</commons-lang3.version>
                 <guice.version>4.1.0</guice.version>
                 <Java-WebSocket.version>1.5.1</Java-WebSocket.version>
-                <shade.bytebuddy.prefix>org.apache.skywalking.apm.dependencies</shade.bytebuddy.prefix>
             </properties>
             <activation>
                 <activeByDefault>true</activeByDefault>
@@ -191,6 +199,39 @@
         <pluginManagement>
             <plugins>
                 <plugin>
+                    <groupId>com.huawei.hwclouds.lubanops</groupId>
+                    <artifactId>buffered-shade-plugin</artifactId>
+                    <version>1.0.0</version>
+                    <executions>
+                        <execution>
+                            <id>buffered-shade</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>shade</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <skip>${buffered.shade.skip.flag}</skip>
+                        <relocations>
+                            <relocation>
+                                <sourceDirectory>${skywalking.source.dir}</sourceDirectory>
+                                <targetDirectory>${skywalking.target.dir}</targetDirectory>
+                                <relocatePatterns>
+                                    <relocatePattern>
+                                        <sourcePattern>
+                                            org.apache.skywalking.apm.dependencies.net.bytebuddy
+                                        </sourcePattern>
+                                        <targetPattern>
+                                            ${shade.common.prefix}.net.bytebuddy
+                                        </targetPattern>
+                                    </relocatePattern>
+                                </relocatePatterns>
+                            </relocation>
+                        </relocations>
+                    </configuration>
+                </plugin>
+                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-shade-plugin</artifactId>
                     <version>3.2.4</version>
@@ -215,7 +256,7 @@
                             </relocation>
                             <relocation>
                                 <pattern>net.bytebuddy</pattern>
-                                <shadedPattern>${shade.bytebuddy.prefix}.net.bytebuddy</shadedPattern>
+                                <shadedPattern>${shade.common.prefix}.net.bytebuddy</shadedPattern>
                             </relocation>
                         </relocations>
                     </configuration>

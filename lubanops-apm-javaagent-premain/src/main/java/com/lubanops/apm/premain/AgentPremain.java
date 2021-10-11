@@ -77,7 +77,7 @@ public class AgentPremain {
                 ClassLoader spiLoader = ClassLoaderManager.getTargetClassLoader(contextClassLoader);
                 // 配置初始化
                 ConfigLoader.initialize(agentArgs, spiLoader);
-                ExtAgentManager.init(spiLoader, agentArgs, instrumentation);
+                ExtAgentManager.init(spiLoader, agentArgs, instrumentation, LibPathUtils.getExtAgentDir());
                 // 针对NoneNamedListener初始化增强
                 NoneNamedListenerBuilder.initialize(instrumentation);
                 // 初始化byte buddy

@@ -10,6 +10,7 @@
     <properties>
         <package.relative.dir/>
         <javaagent.package.name>apm-javaagent</javaagent.package.name>
+        <buffered.shade.skip.flag>false</buffered.shade.skip.flag>
     </properties>
     <dependencies>
         <dependency>
@@ -41,6 +42,10 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>com.huawei.hwclouds.lubanops</groupId>
+                <artifactId>buffered-shade-plugin</artifactId>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-clean-plugin</artifactId>
                 <version>2.5</version>
@@ -58,6 +63,9 @@
                                     <includes>
                                         <include>*${javaagent.package.name}*.jar</include>
                                     </includes>
+                                </fileset>
+                                <fileset>
+                                    <directory>${buffered.shade.agent.dir}</directory>
                                 </fileset>
                             </filesets>
                         </configuration>

@@ -16,8 +16,8 @@
         <config.dir>${javaagent.dir}/${package.temp.dir}/configs</config.dir>
     </properties>
     <modules>
-<!--        <module>flowcontrol-plugin</module>-->
-<!--        <module>kafka-reporter-plugin</module>-->
+        <module>flowcontrol-plugin</module>
+        <module>kafka-reporter-plugin</module>
     </modules>
     <build>
         <plugins>

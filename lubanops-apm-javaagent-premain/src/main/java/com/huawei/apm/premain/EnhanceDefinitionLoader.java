@@ -66,12 +66,6 @@ enum EnhanceDefinitionLoader {
             resolveNamedListener(listener);
             initNamedListener(listener);
         }
-        initExtAgent();
-    }
-
-    private void initExtAgent() {
-        ExtAgentManager.uniteNamedEnhancers(nameDefinitions);
-        ExtAgentManager.uniteNonNamedEnhancers(nonNameDefinitions);
     }
 
     private void initNamedListener(Listener listener) {
@@ -126,6 +120,10 @@ enum EnhanceDefinitionLoader {
                 };
         for (EnhanceDefinition nonNameDefinition : nonNameDefinitions) {
             junction = junction.or(((NonNameMatcher) nonNameDefinition.enhanceClass()).buildJunction());
+        }
+        final ElementMatcher<TypeDescription> elementMatcher = ExtAgentManager.buildMatch();
+        if (elementMatcher != null) {
+            junction = junction.or(elementMatcher);
         }
         return junction.and(not(isInterface()));
     }

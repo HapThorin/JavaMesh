@@ -138,6 +138,10 @@ public class LibPathUtils {
         }
     }
 
+    public static String getExtAgentDir() {
+        return getAgentPath() + "agent" + File.separatorChar;
+    }
+
     public static List<JarFile> getPluginJar() {
         List<JarFile> list = new ArrayList<JarFile>();
         try {

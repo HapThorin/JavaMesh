@@ -91,10 +91,6 @@ public class InterceptorLoader {
                 // noinspection unchecked
                 return (T) clazz.newInstance();
             } else {
-                final Interceptor newInterceptor = ExtAgentManager.createInterceptor(clazz);
-                if (newInterceptor != null){
-                    return (T) newInterceptor;
-                }
                 throw new EnhanceException("Unmatched interceptor type :[" + interceptor + "].");
             }
         } catch (InstantiationException e) {
@@ -102,6 +98,10 @@ public class InterceptorLoader {
         } catch (IllegalAccessException e) {
             throw new EnhanceException("Instantiation interceptor [" + interceptor + "] failed.");
         } catch (ClassNotFoundException e) {
+            final Interceptor newInterceptor = ExtAgentManager.newInterceptor(interceptor);
+            if (newInterceptor != null){
+                return (T) newInterceptor;
+            }
             throw new EnhanceException("Cannot find interceptor [" + interceptor + "].");
         }
     }

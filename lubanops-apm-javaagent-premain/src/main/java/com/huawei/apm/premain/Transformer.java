@@ -1,5 +1,7 @@
 package com.huawei.apm.premain;
 
+import com.huawei.apm.bootstrap.agent.ExtAgentManager;
+import com.huawei.apm.bootstrap.agent.ExtAgentTransResp;
 import com.huawei.apm.bootstrap.definition.EnhanceDefinition;
 import com.huawei.apm.bootstrap.definition.MethodInterceptPoint;
 import com.huawei.apm.bootstrap.interceptors.ConstructorInterceptor;
@@ -23,12 +25,9 @@ import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatchers;
 import net.bytebuddy.utility.JavaModule;
 
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import static com.huawei.apm.enhance.InterceptorLoader.getInterceptors;
 
@@ -45,14 +44,20 @@ public class Transformer implements AgentBuilder.Transformer {
 
     @Override
     public DynamicType.Builder<?> transform(final DynamicType.Builder<?> builder, TypeDescription typeDescription, ClassLoader classLoader, JavaModule module) {
-        final List<Listener> nameListeners = enhanceDefinitionLoader.findNameListeners(typeDescription);
-        final List<EnhanceDefinition> definitions = enhanceDefinitionLoader.findDefinitions(typeDescription);
+        DynamicType.Builder<?> newBuilder = builder;
+        final List<EnhanceDefinition> definitions = new ArrayList<EnhanceDefinition>();
+        final ExtAgentTransResp resp = ExtAgentManager.transform(newBuilder, typeDescription, classLoader);
+        if (!resp.isEmpty()) {
+            definitions.addAll(resp.getDefinitions());
+            newBuilder = resp.getBuilder();
+        }
+        definitions.addAll(enhanceDefinitionLoader.findDefinitions(typeDescription));
 
+        final List<Listener> nameListeners = enhanceDefinitionLoader.findNameListeners(typeDescription);
         if (nameListeners.isEmpty() && definitions.isEmpty()) {
             return builder;
         }
 
-        DynamicType.Builder<?> newBuilder = builder;
         for (Listener listener : nameListeners) {
             newBuilder = NamedListenerTransformer.getInstance()
                 .enhanceNamedListener(listener, newBuilder, typeDescription, classLoader);
@@ -109,7 +114,7 @@ public class Transformer implements AgentBuilder.Transformer {
     private DynamicType.Builder<?> enhanceConstructor(ClassLoader classLoader,
             DynamicType.Builder<?> newBuilder,
             MultiInterMethodHolder methodHolder) {
-        return newBuilder.method(methodHolder.getMatcher())
+        return newBuilder.constructor(methodHolder.getMatcher())
                 .intercept(SuperMethodCall.INSTANCE.andThen(
                         MethodDelegation.withDefaultConfiguration().to(new ConstructorEnhancer(
                                 getInterceptors(methodHolder.getInterceptors(), classLoader, ConstructorInterceptor.class)))));
@@ -117,32 +122,26 @@ public class Transformer implements AgentBuilder.Transformer {
 
     private List<MultiInterMethodHolder> getMethodsToBeEnhanced(List<EnhanceDefinition> definitions,
             TypeDescription typeDescription) {
-        // 构造每个拦截器的匹配条件
-        Map<String, ElementMatcher.Junction<MethodDescription>> matcherGroupByInterceptor =
-                new HashMap<String, ElementMatcher.Junction<MethodDescription>>();
-        for (EnhanceDefinition definition : definitions) {
-            MethodInterceptPoint[] interceptPoints = definition.getMethodInterceptPoints();
-            for (MethodInterceptPoint interceptPoint : interceptPoints) {
-                String interceptor = interceptPoint.getInterceptor();
-                ElementMatcher.Junction<MethodDescription> matcher = matcherGroupByInterceptor.get(interceptor);
-                if (matcher == null) {
-                    matcher = ElementMatchers.none();
-                }
-                matcher = matcher.or(interceptPoint.getMatcher());
-                matcherGroupByInterceptor.put(interceptor, matcher);
-            }
-        }
-
         MethodList<MethodDescription.InDefinedShape> declaredMethods = typeDescription.getDeclaredMethods();
         // 找出所有满足条件的方法以及其所对应的所有拦截器
         List<MultiInterMethodHolder> methodHolders = new LinkedList<MultiInterMethodHolder>();
-        Set<Map.Entry<String, ElementMatcher.Junction<MethodDescription>>> interceptorMatcherEntries =
-                matcherGroupByInterceptor.entrySet();
         for (MethodDescription.InDefinedShape method : declaredMethods) {
-            Set<String> matchedInterceptors = new HashSet<String>();
-            for (Map.Entry<String, ElementMatcher.Junction<MethodDescription>> entry : interceptorMatcherEntries) {
-                if (entry.getValue().matches(method)) {
-                    matchedInterceptors.add(entry.getKey());
+            List<String> matchedInterceptors = new ArrayList<String>();
+            for (EnhanceDefinition definition : definitions) {
+                for (MethodInterceptPoint methodInterceptPoint : definition.getMethodInterceptPoints()) {
+                    if (methodInterceptPoint.isStaticMethod() && method.isStatic()) {
+                        if (methodInterceptPoint.getMatcher().matches(method)) {
+                            matchedInterceptors.add(methodInterceptPoint.getInterceptor());
+                        }
+                    } else if (methodInterceptPoint.isConstructor() && method.isConstructor()) {
+                        if (methodInterceptPoint.getMatcher().matches(method)) {
+                            matchedInterceptors.add(methodInterceptPoint.getInterceptor());
+                        }
+                    } else if (methodInterceptPoint.isInstanceMethod() && !method.isStatic() && !method.isConstructor()) {
+                        if (methodInterceptPoint.getMatcher().matches(method)) {
+                            matchedInterceptors.add(methodInterceptPoint.getInterceptor());
+                        }
+                    }
                 }
             }
             if (!matchedInterceptors.isEmpty()) {
