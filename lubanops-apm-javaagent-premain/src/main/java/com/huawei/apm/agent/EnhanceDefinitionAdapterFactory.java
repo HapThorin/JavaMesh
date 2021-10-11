@@ -31,7 +31,7 @@ public class EnhanceDefinitionAdapterFactory {
     /**
      * 将SkyWalking中的插件定义{@link AbstractClassEnhancePluginDefine} 转换成 {@link EnhanceDefinition}
      *
-     * @param abstractClassEnhancePluginDefine  待转换的SkyWalking插件定义{@link AbstractClassEnhancePluginDefine}
+     * @param abstractClassEnhancePluginDefine 待转换的SkyWalking插件定义{@link AbstractClassEnhancePluginDefine}
      * @return {@link EnhanceDefinition}
      */
     public static EnhanceDefinition adapter(AbstractClassEnhancePluginDefine abstractClassEnhancePluginDefine) {
@@ -65,8 +65,14 @@ public class EnhanceDefinitionAdapterFactory {
         @Override
         public MethodInterceptPoint[] getMethodInterceptPoints() {
             try {
-                int staticMethodSize = abstractClassEnhancePluginDefine.getStaticMethodsInterceptPoints().length;
-                int constructMethodSize = abstractClassEnhancePluginDefine.getConstructorsInterceptPoints().length;
+                int staticMethodSize = 0;
+                if (abstractClassEnhancePluginDefine.getStaticMethodsInterceptPoints() != null) {
+                    staticMethodSize = abstractClassEnhancePluginDefine.getStaticMethodsInterceptPoints().length;
+                }
+                int constructMethodSize = 0;
+                if (abstractClassEnhancePluginDefine.getConstructorsInterceptPoints() != null) {
+                    constructMethodSize = abstractClassEnhancePluginDefine.getConstructorsInterceptPoints().length;
+                }
                 int instanceMethodSize = 0;
                 if (abstractClassEnhancePluginDefine.getInstanceMethodsInterceptPoints() != null) {
                     instanceMethodSize = abstractClassEnhancePluginDefine.getInstanceMethodsInterceptPoints().length;
@@ -76,24 +82,28 @@ public class EnhanceDefinitionAdapterFactory {
                 int index = 0;
 
                 // 转换静态方法拦截点
-                for (StaticMethodsInterceptPoint interceptPoint : abstractClassEnhancePluginDefine.getStaticMethodsInterceptPoints()) {
-                    methodInterceptPoints[index++] = MethodInterceptPoint.newStaticMethodInterceptPoint(interceptPoint.getMethodsInterceptor(), interceptPoint.getMethodsMatcher());
+                if (staticMethodSize > 0) {
+                    for (StaticMethodsInterceptPoint interceptPoint : abstractClassEnhancePluginDefine.getStaticMethodsInterceptPoints()) {
+                        methodInterceptPoints[index++] = MethodInterceptPoint.newStaticMethodInterceptPoint(interceptPoint.getMethodsInterceptor(), interceptPoint.getMethodsMatcher());
+                    }
                 }
 
                 // 转换构造方法拦截点
-                for (ConstructorInterceptPoint interceptPoint : abstractClassEnhancePluginDefine.getConstructorsInterceptPoints()) {
-                    methodInterceptPoints[index++] = MethodInterceptPoint.newConstructorInterceptPoint(interceptPoint.getConstructorInterceptor(), interceptPoint.getConstructorMatcher());
+                if (constructMethodSize > 0) {
+                    for (ConstructorInterceptPoint interceptPoint : abstractClassEnhancePluginDefine.getConstructorsInterceptPoints()) {
+                        methodInterceptPoints[index++] = MethodInterceptPoint.newConstructorInterceptPoint(interceptPoint.getConstructorInterceptor(), interceptPoint.getConstructorMatcher());
+                    }
                 }
 
+                // 转换实例方法拦截点
                 if (abstractClassEnhancePluginDefine.getInstanceMethodsInterceptPoints() != null) {
-                    // 转换实例方法拦截点
                     for (InstanceMethodsInterceptPoint interceptPoint : abstractClassEnhancePluginDefine.getInstanceMethodsInterceptPoints()) {
                         methodInterceptPoints[index++] = MethodInterceptPoint.newInstMethodInterceptPoint(interceptPoint.getMethodsInterceptor(), interceptPoint.getMethodsMatcher());
                     }
                 }
                 return methodInterceptPoints;
             } catch (Throwable e) {
-                e.printStackTrace();
+                LOGGER.warning(String.format(Locale.ROOT, "Can't get MethodInterceptPoints which should be provided by AbstractClassEnhancePluginDefine. %s", e.getMessage()));
             }
             return new MethodInterceptPoint[0];
         }
