@@ -6,7 +6,9 @@ import java.lang.instrument.Instrumentation;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.security.AccessController;
 import java.security.CodeSource;
+import java.security.PrivilegedAction;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +22,7 @@ import com.lubanops.apm.bootstrap.log.LogFactory;
 import com.lubanops.apm.bootstrap.log.LogPathUtils;
 import com.lubanops.apm.premain.agent.AgentStatus;
 import com.lubanops.apm.premain.agent.ArgumentBuilder;
+import com.lubanops.apm.premain.classloader.LopsUrlClassLoader;
 import com.lubanops.apm.premain.log.CollectorLogFactory;
 import com.lubanops.apm.premain.utils.LibPathUtils;
 
@@ -47,19 +50,6 @@ public class AgentPremain {
 
     @SuppressWarnings("rawtypes")
     public static void premain(String agentArgs, Instrumentation instrumentation) {
-//        try {
-//            final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-//            final Method addURL = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
-//            addURL.setAccessible(true);
-//            addURL.invoke(classLoader, new File(
-//                    "D:\\workplace\\other\\skywalking\\dist\\apache-skywalking-apm-bin\\agent\\skywalking-agent.jar")
-//                    .toURI().toURL());
-//            final Class<?> skyWalkingAgent = classLoader.loadClass("org.apache.skywalking.apm.agent.SkyWalkingAgent");
-//            final Method premain = skyWalkingAgent.getDeclaredMethod("premain", String.class, Instrumentation.class);
-//            premain.invoke(null, agentArgs, instrumentation);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
         try {
             if (AgentStatus.STOPPED.equals(agentStatus)) {
                 agentStatus = AgentStatus.LOADING;
@@ -73,11 +63,26 @@ public class AgentPremain {
                 addAgentPath(argsMap);
                 // 初始化序列化器
                 SerializerHolder.initialize(PluginClassLoader.getDefault());
-                ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
-                ClassLoader spiLoader = ClassLoaderManager.getTargetClassLoader(contextClassLoader);
+                ClassLoader parent = Thread.currentThread().getContextClassLoader();
+                ClassLoader spiLoader = ClassLoaderManager.getTargetClassLoader(parent);
                 // 配置初始化
                 ConfigLoader.initialize(agentArgs, spiLoader);
                 ExtAgentManager.init(spiLoader, agentArgs, instrumentation, LibPathUtils.getExtAgentDir());
+                LopsUrlClassLoader classLoader = (LopsUrlClassLoader) AccessController.doPrivileged(
+                    new PrivilegedAction() {
+                        @Override
+                        public Object run() {
+                            return new LopsUrlClassLoader(urls.toArray(new URL[urls.size()]), null);
+                        }
+                    });
+
+                Thread.currentThread().setContextClassLoader(classLoader);
+                Class<?> mainClass = classLoader.loadClass("com.lubanops.apm.core.BootStrapImpl");
+                if (mainClass != null) {
+                    Method startMethod = mainClass.getDeclaredMethod("main", Instrumentation.class, Map.class);
+                    startMethod.invoke(null, instrumentation, argsMap);
+                }
+                Thread.currentThread().setContextClassLoader(parent);
                 // 针对NoneNamedListener初始化增强
                 NoneNamedListenerBuilder.initialize(instrumentation);
                 // 初始化byte buddy
