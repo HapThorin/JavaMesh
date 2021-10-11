@@ -23,6 +23,12 @@ import com.huawei.apm.bootstrap.matcher.NonNameMatcher;
  **/
 public class ClassMatcherAdapterFactory {
 
+    /**
+     * 将{@link ClassMatch} 转换为 {@link ClassMatcher}
+     *
+     * @param classMatch 待适配的{@link ClassMatch}
+     * @return {@link ClassMatcher}
+     */
     public static ClassMatcher adapter(ClassMatch classMatch) {
         if (classMatch instanceof NameMatch) {
             NameMatch nameMatch = (NameMatch) classMatch;

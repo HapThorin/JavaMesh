@@ -5,11 +5,13 @@
 package com.huawei.apm.agent;
 
 import com.huawei.apm.bootstrap.common.BeforeResult;
+import com.huawei.apm.bootstrap.definition.EnhanceDefinition;
 import com.huawei.apm.bootstrap.interceptors.ConstructorInterceptor;
 import com.huawei.apm.bootstrap.interceptors.InstanceMethodInterceptor;
 import com.huawei.apm.bootstrap.interceptors.Interceptor;
 import com.huawei.apm.bootstrap.interceptors.StaticMethodInterceptor;
 
+import org.apache.skywalking.apm.agent.core.plugin.AbstractClassEnhancePluginDefine;
 import org.apache.skywalking.apm.agent.core.plugin.interceptor.enhance.EnhancedInstance;
 import org.apache.skywalking.apm.agent.core.plugin.interceptor.enhance.InstanceConstructorInterceptor;
 import org.apache.skywalking.apm.agent.core.plugin.interceptor.enhance.InstanceMethodsAroundInterceptor;
@@ -31,18 +33,42 @@ import java.lang.reflect.Method;
  **/
 public class InterceptorAdapterFactory {
 
+    /**
+     * 将SkyWalking中的静态方法拦截器{@link StaticMethodsAroundInterceptor} 转换成 {@link StaticMethodInterceptor}
+     *
+     * @param staticMethodsAroundInterceptor 待转换的SkyWalking静态方法拦截器{@link StaticMethodsAroundInterceptor}
+     * @return {@link StaticMethodInterceptor}
+     */
     public static Interceptor adapter(StaticMethodsAroundInterceptor staticMethodsAroundInterceptor) {
         return new StaticMethodInterceptorAdapter(staticMethodsAroundInterceptor);
     }
 
+    /**
+     * 将SkyWalking中的构造方法拦截器{@link InstanceConstructorInterceptor} 转换成 {@link ConstructorInterceptor}
+     *
+     * @param instanceConstructorInterceptor 待转换的SkyWalking构造方法拦截器{@link InstanceConstructorInterceptor}
+     * @return Interceptor
+     */
     public static Interceptor adapter(InstanceConstructorInterceptor instanceConstructorInterceptor) {
         return new ConstructorInterceptorAdapter(instanceConstructorInterceptor);
     }
 
+    /**
+     * 将SkyWalking中的实例方法拦截器{@link InstanceMethodsAroundInterceptor} 转换成 {@link InstanceMethodInterceptor}
+     *
+     * @param instanceMethodsAroundInterceptor 待转换的SkyWalking实例方法拦截器{@link InstanceMethodsAroundInterceptor}
+     * @return Interceptor
+     */
     public static Interceptor adapter(InstanceMethodsAroundInterceptor instanceMethodsAroundInterceptor) {
         return new InstanceMethodInterceptorAdapter(instanceMethodsAroundInterceptor);
     }
 
+    /**
+     * 获取传入的对象数组的Class数组
+     *
+     * @param allObjects 对象数组
+     * @return Class[]
+     */
     public static Class[] getAllClasses(Object[] allObjects) {
         if (allObjects == null || allObjects.length == 0) {
             return new Class[0];
