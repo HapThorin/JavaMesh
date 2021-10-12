@@ -189,10 +189,11 @@ public abstract class ExtAgentManager {
      * 创建额外agent相关的拦截器
      * <p>对所有初始化成功的额外agent策略，调用{@link ExtAgentLoader#newInterceptor}方法，一旦成功则返回
      *
-     * @param className 拦截器名称
+     * @param className       拦截器名称
+     * @param interceptorType 拦截器类型
      * @return 拦截器对象
      */
-    public static Interceptor newInterceptor(String className) {
+    public static Interceptor newInterceptor(String className, Class<?> interceptorType) {
         if (!isInit) {
             LOGGER.log(Level.WARNING, String.format(Locale.ROOT,
                     "[%s] hasn't been initialized yet, or initializes failed.",
@@ -200,7 +201,7 @@ public abstract class ExtAgentManager {
             return null;
         }
         for (ExtAgentLoader extAgentLoader : EXT_AGENT_LOADERS) {
-            final Interceptor interceptor = extAgentLoader.newInterceptor(className);
+            final Interceptor interceptor = extAgentLoader.newInterceptor(className, interceptorType);
             if (interceptor != null) {
                 return interceptor;
             }

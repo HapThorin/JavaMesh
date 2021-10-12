@@ -71,7 +71,7 @@ public class InterceptorLoader {
         if (classLoader == null) {
             classLoader = InterceptorLoader.class.getClassLoader();
         }
-        String interceptorKey = generateKey(interceptor, classLoader);
+        String interceptorKey = generateKey(interceptor, classLoader, interceptorType);
         Interceptor cacheInterceptor = INTERCEPTOR_CACHE.get(interceptorKey);
         if (cacheInterceptor == null) {
             cacheInterceptor = newInterceptor(interceptor, classLoader, interceptorType);
@@ -98,7 +98,7 @@ public class InterceptorLoader {
         } catch (IllegalAccessException e) {
             throw new EnhanceException("Instantiation interceptor [" + interceptor + "] failed.");
         } catch (ClassNotFoundException e) {
-            final Interceptor newInterceptor = ExtAgentManager.newInterceptor(interceptor);
+            final Interceptor newInterceptor = ExtAgentManager.newInterceptor(interceptor, interceptorType);
             if (newInterceptor != null){
                 return (T) newInterceptor;
             }
@@ -106,7 +106,8 @@ public class InterceptorLoader {
         }
     }
 
-    private static String generateKey(String interceptor, ClassLoader classLoader) {
-        return interceptor + "@" + Integer.toHexString(classLoader.hashCode());
+    private static String generateKey(String interceptor, ClassLoader classLoader, Class<?> interceptorType) {
+        return interceptor + "@" + Integer.toHexString(classLoader.hashCode()) +
+                "@" + Integer.toHexString(interceptorType.hashCode());
     }
 }

@@ -5,13 +5,11 @@
 package com.huawei.apm.agent;
 
 import com.huawei.apm.bootstrap.common.BeforeResult;
-import com.huawei.apm.bootstrap.definition.EnhanceDefinition;
 import com.huawei.apm.bootstrap.interceptors.ConstructorInterceptor;
 import com.huawei.apm.bootstrap.interceptors.InstanceMethodInterceptor;
 import com.huawei.apm.bootstrap.interceptors.Interceptor;
 import com.huawei.apm.bootstrap.interceptors.StaticMethodInterceptor;
 
-import org.apache.skywalking.apm.agent.core.plugin.AbstractClassEnhancePluginDefine;
 import org.apache.skywalking.apm.agent.core.plugin.interceptor.enhance.EnhancedInstance;
 import org.apache.skywalking.apm.agent.core.plugin.interceptor.enhance.InstanceConstructorInterceptor;
 import org.apache.skywalking.apm.agent.core.plugin.interceptor.enhance.InstanceMethodsAroundInterceptor;

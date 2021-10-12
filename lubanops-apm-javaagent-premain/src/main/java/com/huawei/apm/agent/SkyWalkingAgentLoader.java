@@ -38,7 +38,10 @@ import com.huawei.apm.bootstrap.agent.ExtAgentManager;
 import com.huawei.apm.bootstrap.agent.ExtAgentTransResp;
 import com.huawei.apm.bootstrap.agent.ExtAgentType;
 import com.huawei.apm.bootstrap.definition.EnhanceDefinition;
+import com.huawei.apm.bootstrap.interceptors.ConstructorInterceptor;
+import com.huawei.apm.bootstrap.interceptors.InstanceMethodInterceptor;
 import com.huawei.apm.bootstrap.interceptors.Interceptor;
+import com.huawei.apm.bootstrap.interceptors.StaticMethodInterceptor;
 
 /**
  * SkyWalking的agent加载策略
@@ -116,14 +119,17 @@ public class SkyWalkingAgentLoader implements ExtAgentLoader {
     }
 
     @Override
-    public Interceptor newInterceptor(String className) {
+    public Interceptor newInterceptor(String className, Class<?> interceptorType) {
         try {
             final Class<?> cls = AgentClassLoader.getDefault().loadClass(className);
-            if (StaticMethodsAroundInterceptor.class.isAssignableFrom(cls)) {
+            if (interceptorType == StaticMethodInterceptor.class &&
+                    StaticMethodsAroundInterceptor.class.isAssignableFrom(cls)) {
                 return InterceptorAdapterFactory.adapter((StaticMethodsAroundInterceptor) cls.newInstance());
-            } else if (InstanceConstructorInterceptor.class.isAssignableFrom(cls)) {
+            } else if (interceptorType == ConstructorInterceptor.class &&
+                    InstanceConstructorInterceptor.class.isAssignableFrom(cls)) {
                 return InterceptorAdapterFactory.adapter((InstanceConstructorInterceptor) cls.newInstance());
-            } else if (InstanceMethodsAroundInterceptor.class.isAssignableFrom(cls)) {
+            } else if (interceptorType == InstanceMethodInterceptor.class &&
+                    InstanceMethodsAroundInterceptor.class.isAssignableFrom(cls)) {
                 return InterceptorAdapterFactory.adapter((InstanceMethodsAroundInterceptor) cls.newInstance());
             }
         } catch (InstantiationException ignored) {

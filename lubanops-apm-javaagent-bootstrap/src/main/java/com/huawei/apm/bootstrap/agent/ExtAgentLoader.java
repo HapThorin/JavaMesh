@@ -60,5 +60,5 @@ public interface ExtAgentLoader {
      * @param className 拦截器类名
      * @return 拦截器实例
      */
-    Interceptor newInterceptor(String className);
+    Interceptor newInterceptor(String className, Class<?> interceptorType);
 }
