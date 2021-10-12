@@ -120,30 +120,29 @@ public class Transformer implements AgentBuilder.Transformer {
                                 getInterceptors(methodHolder.getInterceptors(), classLoader, ConstructorInterceptor.class)))));
     }
 
+    private List<String> getMatchedInterceptors(List<EnhanceDefinition> definitions,
+            MethodDescription.InDefinedShape method) {
+        List<String> matchedInterceptors = new ArrayList<String>();
+        for (EnhanceDefinition definition : definitions) {
+            for (MethodInterceptPoint methodInterceptPoint : definition.getMethodInterceptPoints()) {
+                if (((methodInterceptPoint.isStaticMethod() && method.isStatic()) ||
+                        (methodInterceptPoint.isConstructor() && method.isConstructor()) ||
+                        (methodInterceptPoint.isInstanceMethod() && !method.isStatic() &&
+                                !method.isConstructor())) && methodInterceptPoint.getMatcher().matches(method)) {
+                    matchedInterceptors.add(methodInterceptPoint.getInterceptor());
+                }
+            }
+        }
+        return matchedInterceptors;
+    }
+
     private List<MultiInterMethodHolder> getMethodsToBeEnhanced(List<EnhanceDefinition> definitions,
             TypeDescription typeDescription) {
         MethodList<MethodDescription.InDefinedShape> declaredMethods = typeDescription.getDeclaredMethods();
         // 找出所有满足条件的方法以及其所对应的所有拦截器
         List<MultiInterMethodHolder> methodHolders = new LinkedList<MultiInterMethodHolder>();
         for (MethodDescription.InDefinedShape method : declaredMethods) {
-            List<String> matchedInterceptors = new ArrayList<String>();
-            for (EnhanceDefinition definition : definitions) {
-                for (MethodInterceptPoint methodInterceptPoint : definition.getMethodInterceptPoints()) {
-                    if (methodInterceptPoint.isStaticMethod() && method.isStatic()) {
-                        if (methodInterceptPoint.getMatcher().matches(method)) {
-                            matchedInterceptors.add(methodInterceptPoint.getInterceptor());
-                        }
-                    } else if (methodInterceptPoint.isConstructor() && method.isConstructor()) {
-                        if (methodInterceptPoint.getMatcher().matches(method)) {
-                            matchedInterceptors.add(methodInterceptPoint.getInterceptor());
-                        }
-                    } else if (methodInterceptPoint.isInstanceMethod() && !method.isStatic() && !method.isConstructor()) {
-                        if (methodInterceptPoint.getMatcher().matches(method)) {
-                            matchedInterceptors.add(methodInterceptPoint.getInterceptor());
-                        }
-                    }
-                }
-            }
+            List<String> matchedInterceptors = getMatchedInterceptors(definitions, method);
             if (!matchedInterceptors.isEmpty()) {
                 methodHolders.add(new MultiInterMethodHolder(method, matchedInterceptors.toArray(new String[0])));
             }
