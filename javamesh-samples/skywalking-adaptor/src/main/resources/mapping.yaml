@@ -1,0 +1,11 @@
+adaptorJar: skywalking-adaptor-*.jar
+agentJar: apm-agent-*.jar
+pluginsDir: plugins
+configsDir: config
+resourceMapping:
+  - sourcePath: apm-agent-*.jar
+    targetDir: /
+shadeMappings:
+  - sourcePattern: org.apache.skywalking.apm.dependencies.net.bytebuddy
+    targetPattern: com.huawei.net.bytebuddy
+shadeExcludes:

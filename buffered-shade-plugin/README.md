@@ -23,7 +23,7 @@
 
 ```xml
 <plugin>
-    <groupId>com.huawei.hwclouds.lubanops</groupId>
+    <groupId>com.huawei.javamesh</groupId>
     <artifactId>buffered-shade-plugin</artifactId>
     <version>${版本号}</version>
     <executions>
@@ -41,12 +41,12 @@
             <relocation>
                 <sourceDirectory>${源目录}</sourceDirectory>
                 <targetDirectory>${输出目录}</targetDirectory>
-                <relocatePatterns>
-                    <relocatePattern>
+                <shadeMappings>
+                    <shadeMapping>
                         <sourcePattern>${源前缀}</sourcePattern>
                         <targetPattern>${目标前缀}</targetPattern>
-                    </relocatePattern>
-                </relocatePatterns>
+                    </shadeMapping>
+                </shadeMappings>
                 <excludes>
                     <exclude>${被排除的文件名}</exclude>
                 </excludes>
@@ -58,8 +58,8 @@
 
 - `sourceDirectory`为需要修正的jar包目录
 - `targetDirectory`为修正后jar包的输出目录
-- `sourcePattern`为修正前的前缀，通过`relocatePattern`可添加多组
-- `targetPattern`为修正后的前缀，通过`relocatePattern`可添加多组
+- `sourcePattern`为修正前的前缀，通过`shadeMapping`可添加多组
+- `targetPattern`为修正后的前缀，通过`shadeMapping`可添加多组
 - `exclude`可通过该参数排除指定jar包，被排除的jar包仅做复制，不进行全限定名修正
 
 ## 维护者
