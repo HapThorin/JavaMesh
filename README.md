@@ -14,7 +14,7 @@ javamesh-agentcore/javamesh-agentcore-premain: 启动入口模块
 javamesh-backend: 消息发送模块服务端
 javamesh-package: 打包模块  
 javamesh-prepare: 初始化模块，现用作清理临时文件
-javamesh-samples: 样品模块，内含插件及其相应的客户端
+javamesh-samples: 样品模块，内含插件及其相应的后端
 javamesh-samples/javamesh-example: 插件示例
 javamesh-samples/javamesh-flowcontrol: 流控插件及后端
 
