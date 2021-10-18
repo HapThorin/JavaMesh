@@ -27,7 +27,6 @@ import com.huawei.apm.core.lubanops.common.ConnectionException;
 import com.huawei.apm.core.lubanops.executor.standalone.ServiceThread;
 import com.huawei.apm.core.lubanops.transfer.InvokerService;
 import com.huawei.apm.core.lubanops.utils.ReportDataBuilder;
-
 import com.huawei.apm.core.ext.lubanops.access.MessageIdGenerator;
 import com.huawei.apm.core.ext.lubanops.access.inbound.EventDataBody;
 import com.huawei.apm.core.ext.lubanops.access.inbound.EventDataRequest;

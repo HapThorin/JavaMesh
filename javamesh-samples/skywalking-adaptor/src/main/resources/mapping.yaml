@@ -2,7 +2,7 @@ adaptorJar: skywalking-adaptor-*.jar
 agentJar: apm-agent-*.jar
 pluginsDir: plugins
 configsDir: config
-resourceMapping:
+libJarMappings:
   - sourcePath: apm-agent-*.jar
     targetDir: /
 shadeMappings:

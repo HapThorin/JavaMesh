@@ -13,7 +13,7 @@
         <package.output.dir>${package.agent.dir}/core</package.output.dir>
     </properties>
     <dependencies>
-    	<dependency>
+        <dependency>
             <groupId>com.huawei.javamesh</groupId>
             <artifactId>javamesh-agentcore-bootstrap</artifactId>
             <exclusions>
@@ -44,9 +44,9 @@
             <artifactId>httpclient</artifactId>
         </dependency>
         <dependency>
-	      <groupId>org.apache.commons</groupId>
-	      <artifactId>commons-collections4</artifactId>
-	    </dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -56,24 +56,24 @@
             <groupId>org.java-websocket</groupId>
             <artifactId>Java-WebSocket</artifactId>
             <exclusions>
-	          <exclusion>
-	            <groupId>org.slf4j</groupId>
-	            <artifactId>slf4j-api</artifactId>
-	          </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
-		    <groupId>com.alibaba</groupId>
-		    <artifactId>fastjson</artifactId>
-		</dependency>
-		<dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
         <dependency>
-		    <groupId>org.slf4j</groupId>
-		    <artifactId>slf4j-simple</artifactId>
-		</dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+        </dependency>
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>

@@ -1,7 +1,7 @@
 package com.huawei.apm.core.ext.lubanops.access.inbound;
 
-import com.huawei.apm.core.ext.lubanops.access.MessageType;
 import com.huawei.apm.core.ext.lubanops.access.Message;
+import com.huawei.apm.core.ext.lubanops.access.MessageType;
 import com.huawei.apm.core.ext.lubanops.access.MessageWrapper;
 import com.huawei.apm.core.ext.lubanops.utils.JSON;
 

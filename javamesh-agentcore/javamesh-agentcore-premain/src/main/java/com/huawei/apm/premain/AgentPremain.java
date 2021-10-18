@@ -1,5 +1,22 @@
 package com.huawei.apm.premain;
 
+import com.huawei.apm.bootstrap.config.ConfigLoader;
+import com.huawei.apm.bootstrap.extagent.ExtAgentManager;
+import com.huawei.apm.bootstrap.serialize.SerializerHolder;
+import com.huawei.apm.premain.classloader.ClassLoaderManager;
+import com.huawei.apm.premain.classloader.PluginClassLoader;
+import com.huawei.apm.premain.agent.BootstrapEnhance;
+import com.huawei.apm.premain.agent.ByteBuddyAgentBuilder;
+import com.huawei.apm.premain.agent.NoneNamedListenerBuilder;
+import com.huawei.apm.bootstrap.lubanops.commons.LubanApmConstants;
+import com.huawei.apm.bootstrap.lubanops.log.LogFactory;
+import com.huawei.apm.bootstrap.lubanops.log.LogPathUtils;
+import com.huawei.apm.premain.lubanops.agent.AgentStatus;
+import com.huawei.apm.premain.lubanops.agent.ArgumentBuilder;
+import com.huawei.apm.premain.lubanops.classloader.LopsUrlClassLoader;
+import com.huawei.apm.premain.lubanops.log.CollectorLogFactory;
+import com.huawei.apm.premain.lubanops.utils.LibPathUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
@@ -15,24 +32,6 @@ import java.util.Map;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import com.huawei.apm.bootstrap.lubanops.commons.LubanApmConstants;
-import com.huawei.apm.bootstrap.lubanops.log.LogFactory;
-import com.huawei.apm.bootstrap.lubanops.log.LogPathUtils;
-import com.huawei.apm.premain.lubanops.agent.AgentStatus;
-import com.huawei.apm.premain.lubanops.agent.ArgumentBuilder;
-import com.huawei.apm.premain.lubanops.classloader.LopsUrlClassLoader;
-import com.huawei.apm.premain.lubanops.log.CollectorLogFactory;
-import com.huawei.apm.premain.lubanops.utils.LibPathUtils;
-
-import com.huawei.apm.bootstrap.extagent.ExtAgentManager;
-import com.huawei.apm.bootstrap.config.ConfigLoader;
-import com.huawei.apm.bootstrap.serialize.SerializerHolder;
-import com.huawei.apm.premain.classloader.ClassLoaderManager;
-import com.huawei.apm.premain.classloader.PluginClassLoader;
-import com.huawei.apm.premain.agent.BootstrapEnhance;
-import com.huawei.apm.premain.agent.ByteBuddyAgentBuilder;
-import com.huawei.apm.premain.agent.NoneNamedListenerBuilder;
 
 public class AgentPremain {
 

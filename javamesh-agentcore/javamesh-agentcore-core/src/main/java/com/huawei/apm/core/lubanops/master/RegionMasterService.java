@@ -16,11 +16,11 @@ import org.apache.commons.lang3.StringUtils;
 import com.huawei.apm.bootstrap.lubanops.config.AgentConfigManager;
 import com.huawei.apm.bootstrap.lubanops.exception.ApmRuntimeException;
 import com.huawei.apm.bootstrap.lubanops.log.LogFactory;
-import com.huawei.apm.core.lubanops.transfer.dto.HeartBeatRequest;
-import com.huawei.apm.core.lubanops.transfer.dto.HeartBeatResult;
 import com.huawei.apm.core.lubanops.transfer.dto.RegisterRequest;
 import com.huawei.apm.core.lubanops.transfer.dto.RegisterResult;
 import com.huawei.apm.core.lubanops.utils.HttpClientUtil;
+import com.huawei.apm.core.lubanops.transfer.dto.HeartBeatRequest;
+import com.huawei.apm.core.lubanops.transfer.dto.HeartBeatResult;
 
 import com.huawei.apm.core.ext.lubanops.utils.JSON;
 

@@ -7,17 +7,17 @@ import com.huawei.apm.bootstrap.lubanops.trace.TraceReportService;
 import com.huawei.apm.core.lubanops.api.AgentService;
 import com.huawei.apm.core.lubanops.api.IntervalTaskManager;
 import com.huawei.apm.core.lubanops.event.ApmEventDispatcher;
+import com.huawei.apm.core.lubanops.trace.TraceReportServiceImpl;
+import com.huawei.apm.core.lubanops.transfer.circuit.ReportCircuitBreaker;
 import com.huawei.apm.core.lubanops.executor.ExecuteRepository;
 import com.huawei.apm.core.lubanops.executor.manager.DefaultExecuteRepository;
-import com.huawei.apm.core.lubanops.monitor.HarvestTaskManager;
-import com.huawei.apm.core.lubanops.transfer.InvokerService;
-import com.huawei.apm.core.lubanops.transfer.TransferInvokerService;
-import com.huawei.apm.core.lubanops.transfer.circuit.ReportCircuitBreaker;
 import com.huawei.apm.core.lubanops.master.MasterService;
 import com.huawei.apm.core.lubanops.master.RegionMasterService;
+import com.huawei.apm.core.lubanops.monitor.HarvestTaskManager;
 import com.huawei.apm.core.lubanops.monitor.MonitorReportService;
 import com.huawei.apm.core.lubanops.monitor.MonitorReportServiceImpl;
-import com.huawei.apm.core.lubanops.trace.TraceReportServiceImpl;
+import com.huawei.apm.core.lubanops.transfer.InvokerService;
+import com.huawei.apm.core.lubanops.transfer.TransferInvokerService;
 
 /**
  * Agent Service Module.

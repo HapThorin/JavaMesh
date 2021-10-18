@@ -4,6 +4,7 @@ import com.google.inject.Singleton;
 import com.huawei.apm.bootstrap.lubanops.exception.ApmRuntimeException;
 import com.huawei.apm.core.lubanops.api.AgentService;
 import com.huawei.apm.core.lubanops.common.NamedThreadFactory;
+import com.huawei.apm.core.lubanops.container.Priority;
 import com.huawei.apm.core.lubanops.executor.ExecuteRepository;
 import com.huawei.apm.core.lubanops.executor.timer.HashedWheelTimer;
 import com.huawei.apm.core.lubanops.executor.timer.Timer;
@@ -61,6 +62,6 @@ public class DefaultExecuteRepository implements ExecuteRepository, AgentService
 
     @Override
     public int getPriority() {
-        return EARLY_EXPOSE;
+        return Priority.EARLY_EXPOSE;
     }
 }

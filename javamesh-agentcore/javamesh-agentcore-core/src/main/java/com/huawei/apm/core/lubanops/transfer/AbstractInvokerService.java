@@ -15,11 +15,13 @@ import com.huawei.apm.bootstrap.lubanops.config.ConfigManager;
 import com.huawei.apm.bootstrap.lubanops.config.IdentityConfigManager;
 import com.huawei.apm.bootstrap.lubanops.exception.ApmRuntimeException;
 import com.huawei.apm.bootstrap.lubanops.log.LogFactory;
-import com.huawei.apm.core.lubanops.executor.timer.Timeout;
 import com.huawei.apm.core.lubanops.api.AgentService;
 import com.huawei.apm.core.lubanops.common.ConnectionException;
+import com.huawei.apm.core.lubanops.container.Priority;
 import com.huawei.apm.core.lubanops.executor.ExecuteRepository;
+import com.huawei.apm.core.lubanops.executor.timer.Timeout;
 import com.huawei.apm.core.lubanops.executor.timer.TimerTask;
+
 import com.huawei.apm.core.ext.lubanops.access.Address;
 import com.huawei.apm.core.ext.lubanops.access.MessageWrapper;
 import com.huawei.apm.core.ext.lubanops.transport.ClientManager;
@@ -108,7 +110,7 @@ public abstract class AbstractInvokerService implements InvokerService, AgentSer
 
     @Override
     public int getPriority() {
-        return AGENT_INTERNAL_INFRASTRUCTURE_SERVICE;
+        return Priority.AGENT_INTERNAL_INFRASTRUCTURE_SERVICE;
     }
 
     private LubanWebSocketClient getConnect() throws ConnectionException {
