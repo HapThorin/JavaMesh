@@ -1,4 +1,8 @@
-package com.huawei.apm.bootstrap.extagent;
+/*
+ * Copyright (C) Huawei Technologies Co., Ltd. 2021-2021. All rights reserved.
+ */
+
+package com.huawei.apm.bootstrap.adaptor.shade;
 
 import java.util.List;
 import java.util.regex.Matcher;
@@ -6,16 +10,35 @@ import java.util.regex.Pattern;
 
 import org.objectweb.asm.commons.Remapper;
 
-import com.huawei.apm.bootstrap.extagent.entity.ShadeMapping;
+import com.huawei.apm.bootstrap.adaptor.shade.mapping.ShadeMapping;
 
+/**
+ * 自定义Remapper，用于修正全限定名和路径
+ *
+ * @author h30007557
+ * @version 1.0.0
+ * @since 2021/10/18
+ */
 public class ExtAgentRemapper extends Remapper {
+    /**
+     * 类的匹配格式
+     */
     private final Pattern classPattern = Pattern.compile("(\\[*)?L(.+);");
+    /**
+     * 全限定名修正的mapping集
+     */
     private final List<ShadeMapping> shadeMappings;
 
     public ExtAgentRemapper(List<ShadeMapping> shadeMappings) {
         this.shadeMappings = shadeMappings;
     }
 
+    /**
+     * 修正字符串型字段，需要修正全限定名和路径名
+     *
+     * @param value 字段值
+     * @return 修正后结果
+     */
     @Override
     public Object mapValue(Object value) {
         if (value instanceof String) {
@@ -40,6 +63,12 @@ public class ExtAgentRemapper extends Remapper {
         return super.mapValue(value);
     }
 
+    /**
+     * 修正类型
+     *
+     * @param internalName 类型名称
+     * @return 修正后的类型
+     */
     @Override
     public String map(String internalName) {
         String prefix = "";

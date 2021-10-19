@@ -2,7 +2,7 @@
  * Copyright (C) Huawei Technologies Co., Ltd. 2021-2021. All rights reserved.
  */
 
-package com.huawei.apm.bootstrap.extagent;
+package com.huawei.apm.bootstrap.adaptor;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,23 +32,26 @@ import net.bytebuddy.matcher.ElementMatchers;
 
 import org.yaml.snakeyaml.Yaml;
 
+import com.huawei.apm.bootstrap.adaptor.shade.ExtAgentShader;
+import com.huawei.apm.bootstrap.adaptor.utils.IOUtil;
+import com.huawei.apm.bootstrap.adaptor.utils.StringUtil;
 import com.huawei.apm.bootstrap.config.ConfigLoader;
 import com.huawei.apm.bootstrap.definition.EnhanceDefinition;
-import com.huawei.apm.bootstrap.extagent.entity.ExtAgentConfig;
-import com.huawei.apm.bootstrap.extagent.entity.ExtAgentMapping;
-import com.huawei.apm.bootstrap.extagent.entity.ExtAgentTransResp;
-import com.huawei.apm.bootstrap.extagent.entity.LibJarMapping;
+import com.huawei.apm.bootstrap.adaptor.config.ExtAgentConfig;
+import com.huawei.apm.bootstrap.adaptor.shade.mapping.ExtAgentMapping;
+import com.huawei.apm.bootstrap.adaptor.entity.ExtAgentTransResp;
+import com.huawei.apm.bootstrap.adaptor.shade.mapping.LibJarMapping;
 import com.huawei.apm.bootstrap.interceptors.Interceptor;
 import com.huawei.apm.bootstrap.lubanops.log.LogFactory;
 
 /**
- * 额外agent的管理器
+ * 额外agent的适配器
  *
  * @author h30007557
  * @version 1.0.0
  * @since 2021/10/11
  */
-public abstract class ExtAgentManager {
+public abstract class ExtAgentAdaptor {
     /**
      * 日志
      */
@@ -158,8 +161,7 @@ public abstract class ExtAgentManager {
         final File[] adaptorJars = extAgentDir.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
-                return name.endsWith(".jar") &&
-                        ExtAgentUtils.isWildcardMatch(name, extAgentMapping.getAdaptorJar());
+                return name.endsWith(".jar") && StringUtil.isWildcardMatch(name, extAgentMapping.getAdaptorJar());
             }
         });
         if (adaptorJars == null || adaptorJars.length <= 0) {
@@ -178,8 +180,7 @@ public abstract class ExtAgentManager {
         final File[] agentJars = shadeExtAgentDir.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
-                return name.endsWith(".jar") &&
-                        ExtAgentUtils.isWildcardMatch(name, extAgentMapping.getAgentJar());
+                return name.endsWith(".jar") && StringUtil.isWildcardMatch(name, extAgentMapping.getAgentJar());
             }
         });
         if (agentJars == null || agentJars.length <= 0) {
@@ -198,7 +199,7 @@ public abstract class ExtAgentManager {
         final File[] pluginJars = extAgentDir.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
-                return name.endsWith(".jar") && !ExtAgentUtils.isWildcardMatch(name, extAgentMapping.getAdaptorJar());
+                return name.endsWith(".jar") && !StringUtil.isWildcardMatch(name, extAgentMapping.getAdaptorJar());
             }
         });
         if (pluginJars == null) {
@@ -207,16 +208,16 @@ public abstract class ExtAgentManager {
         for (File pluginJar : pluginJars) {
             final File targetFile = new File(cacheExtAgentPath + File.separatorChar + extAgentMapping.getPluginsDir() +
                     File.separatorChar + pluginJar.getName());
-            if (!ExtAgentUtils.createParentDir(targetFile)) {
+            if (!IOUtil.createParentDir(targetFile)) {
                 return;
             }
-            ExtAgentUtils.copyFile(pluginJar, targetFile);
+            IOUtil.copyFile(pluginJar, targetFile);
         }
     }
 
     private static void cacheConfigs(String extAgentPath, String cacheExtAgentPath, ExtAgentMapping extAgentMapping)
             throws IOException {
-        ExtAgentUtils.copyAllFiles(new File(extAgentPath + File.separatorChar + "config"),
+        IOUtil.copyAllFiles(new File(extAgentPath + File.separatorChar + "config"),
                 cacheExtAgentPath + File.separatorChar + extAgentMapping.getConfigsDir());
     }
 
@@ -242,14 +243,14 @@ public abstract class ExtAgentManager {
             final File[] matchFiles = resourceDir.listFiles(new FilenameFilter() {
                 @Override
                 public boolean accept(File dir, String name) {
-                    return ExtAgentUtils.isWildcardMatch(name, wildcardName);
+                    return StringUtil.isWildcardMatch(name, wildcardName);
                 }
             });
             if (matchFiles == null) {
                 continue;
             }
             for (File matchFile : matchFiles) {
-                ExtAgentUtils.copyFile(matchFile, new File(targetDirPath + File.separatorChar + matchFile.getName()));
+                IOUtil.copyFile(matchFile, new File(targetDirPath + File.separatorChar + matchFile.getName()));
             }
         }
     }
@@ -259,13 +260,13 @@ public abstract class ExtAgentManager {
         if (!resourceDir.exists() && !resourceDir.mkdirs()) {
             return;
         }
-        ExtAgentUtils.copyAllFiles(resourceDir, cacheExtAgentPath);
+        IOUtil.copyAllFiles(resourceDir, cacheExtAgentPath);
     }
 
     private static String cacheStructure(String extAgentPath, String cacheCacheDirPath, String extAgentType,
             ExtAgentMapping extAgentMapping) {
         final String cacheExtAgentPath = cacheCacheDirPath + File.separatorChar + extAgentType;
-        ExtAgentUtils.deleteDirs(new File(cacheExtAgentPath));
+        IOUtil.deleteDirs(new File(cacheExtAgentPath));
         try {
             cachePlugins(extAgentPath, cacheExtAgentPath, extAgentMapping);
             cacheConfigs(extAgentPath, cacheExtAgentPath, extAgentMapping);
@@ -309,7 +310,7 @@ public abstract class ExtAgentManager {
         if (!isInit) {
             LOGGER.log(Level.WARNING, String.format(Locale.ROOT,
                     "[%s] hasn't been initialized yet, or initializes failed.",
-                    ExtAgentManager.class.getSimpleName()));
+                    ExtAgentAdaptor.class.getSimpleName()));
             return null;
         }
         ElementMatcher.Junction<TypeDescription> junction = ElementMatchers.none();
@@ -337,7 +338,7 @@ public abstract class ExtAgentManager {
         if (!isInit) {
             LOGGER.log(Level.WARNING, String.format(Locale.ROOT,
                     "[%s] hasn't been initialized yet, or initializes failed.",
-                    ExtAgentManager.class.getSimpleName()));
+                    ExtAgentAdaptor.class.getSimpleName()));
             return ExtAgentTransResp.empty(builder);
         }
         final List<EnhanceDefinition> result = new ArrayList<EnhanceDefinition>();
@@ -364,7 +365,7 @@ public abstract class ExtAgentManager {
         if (!isInit) {
             LOGGER.log(Level.WARNING, String.format(Locale.ROOT,
                     "[%s] hasn't been initialized yet, or initializes failed.",
-                    ExtAgentManager.class.getSimpleName()));
+                    ExtAgentAdaptor.class.getSimpleName()));
             return null;
         }
         for (ExtAgentLoader extAgentLoader : EXT_AGENT_LOADERS) {
@@ -408,7 +409,7 @@ public abstract class ExtAgentManager {
                 return new URLAppender(classLoader, addURL);
             } catch (NoSuchMethodException ignored) {
                 LOGGER.log(Level.SEVERE, String.format(Locale.ROOT,
-                        "Cannot find 'addURL' method, [%s] initialize failed.", ExtAgentManager.class.getSimpleName()));
+                        "Cannot find 'addURL' method, [%s] initialize failed.", ExtAgentAdaptor.class.getSimpleName()));
                 return null;
             }
         }

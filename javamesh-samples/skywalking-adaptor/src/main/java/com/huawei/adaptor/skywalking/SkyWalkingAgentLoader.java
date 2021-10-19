@@ -2,7 +2,7 @@
  * Copyright (C) Huawei Technologies Co., Ltd. 2021-2021. All rights reserved.
  */
 
-package com.huawei.javamesh.ecology.skywalking;
+package com.huawei.adaptor.skywalking;
 
 import java.lang.instrument.Instrumentation;
 import java.lang.reflect.InvocationTargetException;
@@ -33,9 +33,9 @@ import org.apache.skywalking.apm.agent.core.plugin.interceptor.enhance.InstanceM
 import org.apache.skywalking.apm.agent.core.plugin.interceptor.enhance.StaticMethodsAroundInterceptor;
 import org.apache.skywalking.apm.agent.core.plugin.loader.AgentClassLoader;
 
-import com.huawei.apm.bootstrap.extagent.ExtAgentLoader;
-import com.huawei.apm.bootstrap.extagent.ExtAgentManager;
-import com.huawei.apm.bootstrap.extagent.entity.ExtAgentTransResp;
+import com.huawei.apm.bootstrap.adaptor.ExtAgentLoader;
+import com.huawei.apm.bootstrap.adaptor.ExtAgentAdaptor;
+import com.huawei.apm.bootstrap.adaptor.entity.ExtAgentTransResp;
 import com.huawei.apm.bootstrap.definition.EnhanceDefinition;
 import com.huawei.apm.bootstrap.interceptors.ConstructorInterceptor;
 import com.huawei.apm.bootstrap.interceptors.InstanceMethodInterceptor;
@@ -158,7 +158,7 @@ public class SkyWalkingAgentLoader implements ExtAgentLoader {
          */
         @Advice.OnMethodEnter
         public static void methodEnter(@Advice.This Object originPluginFinder) {
-            if (!ExtAgentManager.isInit()) {
+            if (!ExtAgentAdaptor.isInit()) {
                 PluginFinderAdvice.init(originPluginFinder);
             }
         }

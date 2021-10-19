@@ -2,7 +2,7 @@
  * Copyright (C) Huawei Technologies Co., Ltd. 2021-2021. All rights reserved.
  */
 
-package com.huawei.apm.bootstrap.extagent.entity;
+package com.huawei.apm.bootstrap.adaptor.config;
 
 import java.io.File;
 import java.security.AccessController;
@@ -25,7 +25,13 @@ public class ExtAgentConfig implements BaseConfig {
      * 是否加载额外的agent
      */
     private boolean loadExtAgent = false;
+    /**
+     * 外部agent加载相关配置的mapping
+     */
     private String mappingName = "mapping.yaml";
+    /**
+     * 临时缓存目录，外部agent将在这里修正目录结构和全限定名，默认为系统的临时文件夹
+     */
     private String tempCacheDir;
 
     public boolean isLoadExtAgent() {

@@ -1,7 +1,7 @@
 package com.huawei.apm.premain.agent;
 
 import com.huawei.apm.bootstrap.definition.EnhanceDefinition;
-import com.huawei.apm.bootstrap.extagent.ExtAgentManager;
+import com.huawei.apm.bootstrap.adaptor.ExtAgentAdaptor;
 import com.huawei.apm.bootstrap.lubanops.NamedListener;
 import com.huawei.apm.bootstrap.matcher.ClassMatcher;
 import com.huawei.apm.bootstrap.matcher.NameMatcher;
@@ -121,7 +121,7 @@ enum EnhanceDefinitionLoader {
         for (EnhanceDefinition nonNameDefinition : nonNameDefinitions) {
             junction = junction.or(((NonNameMatcher) nonNameDefinition.enhanceClass()).buildJunction());
         }
-        final ElementMatcher<TypeDescription> elementMatcher = ExtAgentManager.buildMatch();
+        final ElementMatcher<TypeDescription> elementMatcher = ExtAgentAdaptor.buildMatch();
         if (elementMatcher != null) {
             junction = junction.or(elementMatcher);
         }

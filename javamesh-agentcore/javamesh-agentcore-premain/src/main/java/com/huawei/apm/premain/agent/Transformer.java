@@ -1,7 +1,7 @@
 package com.huawei.apm.premain.agent;
 
-import com.huawei.apm.bootstrap.extagent.ExtAgentManager;
-import com.huawei.apm.bootstrap.extagent.entity.ExtAgentTransResp;
+import com.huawei.apm.bootstrap.adaptor.ExtAgentAdaptor;
+import com.huawei.apm.bootstrap.adaptor.entity.ExtAgentTransResp;
 import com.huawei.apm.bootstrap.definition.EnhanceDefinition;
 import com.huawei.apm.bootstrap.definition.MethodInterceptPoint;
 import com.huawei.apm.bootstrap.interceptors.ConstructorInterceptor;
@@ -46,7 +46,7 @@ public class Transformer implements AgentBuilder.Transformer {
     public DynamicType.Builder<?> transform(final DynamicType.Builder<?> builder, TypeDescription typeDescription, ClassLoader classLoader, JavaModule module) {
         DynamicType.Builder<?> newBuilder = builder;
         final List<EnhanceDefinition> definitions = new ArrayList<EnhanceDefinition>();
-        final ExtAgentTransResp resp = ExtAgentManager.transform(newBuilder, typeDescription, classLoader);
+        final ExtAgentTransResp resp = ExtAgentAdaptor.transform(newBuilder, typeDescription, classLoader);
         if (!resp.isEmpty()) {
             definitions.addAll(resp.getDefinitions());
             newBuilder = resp.getBuilder();

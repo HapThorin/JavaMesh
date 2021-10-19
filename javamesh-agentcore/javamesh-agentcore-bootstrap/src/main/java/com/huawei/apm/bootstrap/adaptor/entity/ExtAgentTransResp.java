@@ -2,7 +2,7 @@
  * Copyright (C) Huawei Technologies Co., Ltd. 2021-2021. All rights reserved.
  */
 
-package com.huawei.apm.bootstrap.extagent.entity;
+package com.huawei.apm.bootstrap.adaptor.entity;
 
 import java.util.Collections;
 import java.util.List;
@@ -10,7 +10,7 @@ import java.util.List;
 import net.bytebuddy.dynamic.DynamicType;
 
 import com.huawei.apm.bootstrap.definition.EnhanceDefinition;
-import com.huawei.apm.bootstrap.extagent.ExtAgentLoader;
+import com.huawei.apm.bootstrap.adaptor.ExtAgentLoader;
 
 /**
  * 额外agent的转换结果，调用{@link ExtAgentLoader#transform}的返回值

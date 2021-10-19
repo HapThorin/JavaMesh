@@ -2,7 +2,7 @@
  * Copyright (C) Huawei Technologies Co., Ltd. 2021-2021. All rights reserved.
  */
 
-package com.huawei.apm.bootstrap.extagent;
+package com.huawei.apm.bootstrap.adaptor;
 
 import java.lang.instrument.Instrumentation;
 
@@ -10,7 +10,7 @@ import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.matcher.ElementMatcher;
 
-import com.huawei.apm.bootstrap.extagent.entity.ExtAgentTransResp;
+import com.huawei.apm.bootstrap.adaptor.entity.ExtAgentTransResp;
 import com.huawei.apm.bootstrap.interceptors.Interceptor;
 
 /**

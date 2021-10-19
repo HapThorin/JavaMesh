@@ -1,6 +1,6 @@
 package com.huawei.apm.premain.enhance;
 
-import com.huawei.apm.bootstrap.extagent.ExtAgentManager;
+import com.huawei.apm.bootstrap.adaptor.ExtAgentAdaptor;
 import com.huawei.apm.bootstrap.interceptors.Interceptor;
 import com.huawei.apm.premain.classloader.ClassLoaderManager;
 
@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class InterceptorLoader {
     /**
      * 全局拦截器缓存
-     * key : 组合{@link InterceptorLoader#generateKey(String, ClassLoader)}
+     * key : 组合{@link InterceptorLoader#generateKey}
      * value : 拦截器
      */
     private static final Map<String, Interceptor> INTERCEPTOR_CACHE = new ConcurrentHashMap<String, Interceptor>();
@@ -98,7 +98,7 @@ public class InterceptorLoader {
         } catch (IllegalAccessException e) {
             throw new EnhanceException("Instantiation interceptor [" + interceptor + "] failed.");
         } catch (ClassNotFoundException e) {
-            final Interceptor newInterceptor = ExtAgentManager.newInterceptor(interceptor, interceptorType);
+            final Interceptor newInterceptor = ExtAgentAdaptor.newInterceptor(interceptor, interceptorType);
             if (newInterceptor != null){
                 return (T) newInterceptor;
             }

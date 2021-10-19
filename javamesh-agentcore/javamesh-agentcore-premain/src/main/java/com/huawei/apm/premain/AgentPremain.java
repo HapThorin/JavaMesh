@@ -1,7 +1,7 @@
 package com.huawei.apm.premain;
 
 import com.huawei.apm.bootstrap.config.ConfigLoader;
-import com.huawei.apm.bootstrap.extagent.ExtAgentManager;
+import com.huawei.apm.bootstrap.adaptor.ExtAgentAdaptor;
 import com.huawei.apm.bootstrap.serialize.SerializerHolder;
 import com.huawei.apm.premain.classloader.ClassLoaderManager;
 import com.huawei.apm.premain.classloader.PluginClassLoader;
@@ -64,7 +64,7 @@ public class AgentPremain {
                 ClassLoader spiLoader = ClassLoaderManager.getTargetClassLoader(parent);
                 // 配置初始化
                 ConfigLoader.initialize(agentArgs, spiLoader);
-                ExtAgentManager.init(agentArgs, instrumentation, LibPathUtils.getAgentPath(),
+                ExtAgentAdaptor.init(agentArgs, instrumentation, LibPathUtils.getAgentPath(),
                         LibPathUtils.getPluginsPath());
                 LopsUrlClassLoader classLoader = (LopsUrlClassLoader) AccessController.doPrivileged(
                     new PrivilegedAction() {

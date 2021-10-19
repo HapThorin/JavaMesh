@@ -1,6 +1,6 @@
 package com.huawei.apm.premain.classloader;
 
-import com.huawei.apm.bootstrap.extagent.ExtAgentManager;
+import com.huawei.apm.bootstrap.adaptor.ExtAgentAdaptor;
 import com.huawei.apm.premain.agent.ByteBuddyAgentBuilder;
 import com.huawei.apm.bootstrap.lubanops.log.LogFactory;
 import com.huawei.apm.premain.lubanops.utils.LibPathUtils;
@@ -63,7 +63,7 @@ public class PluginClassLoader extends URLClassLoader {
         final File[] pluginDirs = pluginBaseDir.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
-                return !name.equals(LibPathUtils.getLubanOpsDirName()) && ExtAgentManager.isNotExtAgentType(name);
+                return !name.equals(LibPathUtils.getLubanOpsDirName()) && ExtAgentAdaptor.isNotExtAgentType(name);
             }
         });
         if (pluginDirs == null) {

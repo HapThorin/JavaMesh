@@ -20,7 +20,7 @@ import java.util.logging.Logger;
 
 import org.yaml.snakeyaml.Yaml;
 
-import com.huawei.apm.bootstrap.extagent.ExtAgentManager;
+import com.huawei.apm.bootstrap.adaptor.ExtAgentAdaptor;
 import com.huawei.apm.bootstrap.lubanops.log.LogFactory;
 import com.huawei.apm.premain.lubanops.utils.LibPathUtils;
 
@@ -58,7 +58,7 @@ public abstract class PluginConfigLoader {
         final String[] pluginDirPaths = pluginBaseDir.list(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
-                return !name.equals(LibPathUtils.getLubanOpsDirName()) && ExtAgentManager.isNotExtAgentType(name);
+                return !name.equals(LibPathUtils.getLubanOpsDirName()) && ExtAgentAdaptor.isNotExtAgentType(name);
             }
         });
         if (pluginDirPaths == null) {

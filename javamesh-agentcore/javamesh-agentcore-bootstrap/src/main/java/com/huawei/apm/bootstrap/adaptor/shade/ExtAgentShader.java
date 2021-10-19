@@ -1,4 +1,8 @@
-package com.huawei.apm.bootstrap.extagent;
+/*
+ * Copyright (C) Huawei Technologies Co., Ltd. 2021-2021. All rights reserved.
+ */
+
+package com.huawei.apm.bootstrap.adaptor.shade;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -18,12 +22,28 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.commons.ClassRemapper;
 
-import com.huawei.apm.bootstrap.extagent.entity.ShadeMapping;
+import com.huawei.apm.bootstrap.adaptor.shade.mapping.ShadeMapping;
+import com.huawei.apm.bootstrap.adaptor.utils.IOUtil;
 
+/**
+ * 修正jar包中所有类全限定名的shader
+ *
+ * @author h30007557
+ * @version 1.0.0
+ * @since 2021/10/18
+ */
 public class ExtAgentShader {
+    /**
+     * 修正目录下所有jar包中所有类全限定名
+     *
+     * @param sourcePath    源目录
+     * @param targetPath    输出目标目录
+     * @param shadeMappings 修正mapping
+     * @param excludes      无需修正的jar包
+     */
     public static void shade(String sourcePath, String targetPath, List<ShadeMapping> shadeMappings,
             Set<String> excludes) {
-        ExtAgentUtils.deleteDirs(new File(targetPath));
+        IOUtil.deleteDirs(new File(targetPath));
         final File sourceDir = new File(sourcePath);
         if (!sourceDir.exists() || !sourceDir.isDirectory()) {
             return;
@@ -36,6 +56,14 @@ public class ExtAgentShader {
         foreachFile(sourceDir, excludes, shadeConsumer, copyConsumer);
     }
 
+    /**
+     * 对所有文件进行操作
+     *
+     * @param file            文件
+     * @param excludes        无需修正的jar包
+     * @param jarConsumer     对jar包进行操作
+     * @param defaultConsumer 对其他文件或无需修正的jar包进行的操作
+     */
     private static void foreachFile(File file, Set<String> excludes, FileConsumer jarConsumer,
             FileConsumer defaultConsumer) {
         if (file.isFile()) {
@@ -55,14 +83,32 @@ public class ExtAgentShader {
         }
     }
 
+    /**
+     * 文件消费者，为兼容1.6
+     */
     private interface FileConsumer {
         void consume(File file);
     }
 
+    /**
+     * shade操作消费者
+     */
     private static class ShadeConsumer implements FileConsumer {
+        /**
+         * 源路径
+         */
         private final String sourcePath;
+        /**
+         * 目标路径
+         */
         private final String targetPath;
+        /**
+         * 自定义Remapper，用于修正全限定名和路径
+         */
         private final ExtAgentRemapper extAgentRemapper;
+        /**
+         * 默认消费者，修正失败时将执行默认操作
+         */
         private final FileConsumer defaultConsumer;
 
         private ShadeConsumer(String sourcePath, String targetPath, ExtAgentRemapper extAgentRemapper,
@@ -79,7 +125,7 @@ public class ExtAgentShader {
                 JarOutputStream outputStream = null;
                 try {
                     final File targetFile = new File(file.getCanonicalPath().replace(sourcePath, targetPath));
-                    if (!ExtAgentUtils.createParentDir(targetFile)) {
+                    if (!IOUtil.createParentDir(targetFile)) {
                         return;
                     }
                     outputStream = new JarOutputStream(new BufferedOutputStream(new FileOutputStream(targetFile)));
@@ -94,6 +140,13 @@ public class ExtAgentShader {
             }
         }
 
+        /**
+         * 修正jar包
+         *
+         * @param file         jar包
+         * @param outputStream 目标输出流
+         * @throws IOException 修正jar包失败
+         */
         private void shadeJar(File file, JarOutputStream outputStream) throws IOException {
             final JarFile jarFile = new JarFile(file);
             final Set<String> duplicateSet = new HashSet<String>();
@@ -114,6 +167,15 @@ public class ExtAgentShader {
             }
         }
 
+        /**
+         * 修正jar包中文件
+         *
+         * @param entry        jar包中文件
+         * @param inputStream  该文件的输入流
+         * @param outputStream 目标jar包输出流
+         * @param duplicateSet 目录去重集
+         * @throws IOException 修正文件失败
+         */
         private void shadeEntry(JarEntry entry, InputStream inputStream, JarOutputStream outputStream,
                 Set<String> duplicateSet) throws IOException {
             final String entryName = entry.getName();
@@ -121,12 +183,21 @@ public class ExtAgentShader {
             String remappedName = extAgentRemapper.map(entryName);
             checkParentDir(remappedName, entryTime, outputStream, duplicateSet);
             if (entryName.endsWith(".class")) {
-                renameClass(extAgentRemapper, entryName, entryTime, inputStream, outputStream);
+                remapClass(extAgentRemapper, entryName, entryTime, inputStream, outputStream);
             } else {
                 copyEntry(entryName, entryTime, inputStream, outputStream);
             }
         }
 
+        /**
+         * 拷贝jar包中普通文件
+         *
+         * @param entryPath    文件路径
+         * @param entryTime    文件创建时间
+         * @param inputStream  文件输入流
+         * @param outputStream 目标jar包输出流
+         * @throws IOException 拷贝文件失败
+         */
         private void copyEntry(String entryPath, long entryTime, InputStream inputStream, JarOutputStream outputStream)
                 throws IOException {
             final JarEntry newEntry = new JarEntry(entryPath);
@@ -139,7 +210,17 @@ public class ExtAgentShader {
             }
         }
 
-        private void renameClass(ExtAgentRemapper remapper, String classPath, long entryTime, InputStream inputStream,
+        /**
+         * 对class文件进行重新修正
+         *
+         * @param remapper     自定义Remapper，用于修正全限定名和路径
+         * @param classPath    class文件路径
+         * @param entryTime    文件创建时间
+         * @param inputStream  文件的输入流
+         * @param outputStream 目标jar包输出流
+         * @throws IOException 修正class文件失败
+         */
+        private void remapClass(ExtAgentRemapper remapper, String classPath, long entryTime, InputStream inputStream,
                 JarOutputStream outputStream) throws IOException {
             final ClassReader classReader = new ClassReader(inputStream);
             final ClassWriter classWriter = new ClassWriter(0);
@@ -164,17 +245,35 @@ public class ExtAgentShader {
             outputStream.write(renamedClass);
         }
 
-        private void checkParentDir(String classPath, long entryTime, JarOutputStream outputStream,
+        /**
+         * 验证并创建父目录
+         *
+         * @param filePath     文件路径
+         * @param entryTime    文件创建时间
+         * @param outputStream 目标jar包输出流
+         * @param duplicateSet 目录去重集
+         * @throws IOException 创建目录失败
+         */
+        private void checkParentDir(String filePath, long entryTime, JarOutputStream outputStream,
                 Set<String> duplicateSet) throws IOException {
-            final int index = classPath.lastIndexOf('/');
+            final int index = filePath.lastIndexOf('/');
             if (index != -1) {
-                final String dir = classPath.substring(0, index);
+                final String dir = filePath.substring(0, index);
                 if (!duplicateSet.contains(dir)) {
                     mkdirs(dir, entryTime, outputStream, duplicateSet);
                 }
             }
         }
 
+        /**
+         * 在jar包中创建完整的一个包路径
+         *
+         * @param packagePath  包路径
+         * @param entryTime    创建时间
+         * @param outputStream 目标jar包输出流
+         * @param duplicateSet 目录去重集
+         * @throws IOException 创建目录失败
+         */
         private void mkdirs(String packagePath, long entryTime, JarOutputStream outputStream, Set<String> duplicateSet)
                 throws IOException {
             if (packagePath.lastIndexOf('/') > 0) {
@@ -189,6 +288,15 @@ public class ExtAgentShader {
             duplicateSet.add(packagePath);
         }
 
+        /**
+         * 校验路径并构建ShadeConsumer
+         *
+         * @param sourcePath      源jar包路径
+         * @param targetPath      目标jar包路径
+         * @param shadeMappings   修正mapping
+         * @param defaultConsumer 默认的文件处理器
+         * @return ShadeConsumer对象
+         */
         static ShadeConsumer build(String sourcePath, String targetPath, List<ShadeMapping> shadeMappings,
                 FileConsumer defaultConsumer) {
             try {
@@ -201,8 +309,17 @@ public class ExtAgentShader {
         }
     }
 
+    /**
+     * 用于复制文件的处理器
+     */
     private static class CopyConsumer implements FileConsumer {
+        /**
+         * 源文件路径
+         */
         private final String sourcePath;
+        /**
+         * 目标文件路径
+         */
         private final String targetPath;
 
         private CopyConsumer(String sourcePath, String targetPath) {
@@ -214,13 +331,20 @@ public class ExtAgentShader {
         public void consume(File file) {
             try {
                 final File targetFile = new File(file.getCanonicalPath().replace(sourcePath, targetPath));
-                if (ExtAgentUtils.createParentDir(targetFile)) {
-                    ExtAgentUtils.copyFile(file, targetFile);
+                if (IOUtil.createParentDir(targetFile)) {
+                    IOUtil.copyFile(file, targetFile);
                 }
             } catch (IOException ignored) {
             }
         }
 
+        /**
+         * 构建CopyConsumer
+         *
+         * @param sourcePath 源文件路径
+         * @param targetPath 目标文件路径
+         * @return CopyConsumer对象
+         */
         static CopyConsumer build(String sourcePath, String targetPath) {
             try {
                 return new CopyConsumer(new File(sourcePath).getCanonicalPath(),

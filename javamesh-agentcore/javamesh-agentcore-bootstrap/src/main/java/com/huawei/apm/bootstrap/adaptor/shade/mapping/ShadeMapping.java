@@ -1,9 +1,32 @@
-package com.huawei.apm.bootstrap.extagent.entity;
+/*
+ * Copyright (C) Huawei Technologies Co., Ltd. 2021-2021. All rights reserved.
+ */
 
+package com.huawei.apm.bootstrap.adaptor.shade.mapping;
+
+/**
+ * 全限定名修正的mapping
+ *
+ * @author h30007557
+ * @version 1.0.0
+ * @since 2021/10/18
+ */
 public class ShadeMapping {
+    /**
+     * 源全限定名格式
+     */
     private String sourcePattern;
+    /**
+     * 目标全限定名格式
+     */
     private String targetPattern;
+    /**
+     * 源路径格式
+     */
     private String sourcePathPattern;
+    /**
+     * 目标路径格式
+     */
     private String targetPathPattern;
 
     public void setSourcePattern(String sourcePattern) {
