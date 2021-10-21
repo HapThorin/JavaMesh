@@ -23,7 +23,9 @@
             </activation>
             <modules>
                 <module>javamesh-flowcontrol</module>
-                <module>javamesh-dummy</module>
+
+                <module>javamesh-server-monitor</module>
+                <module>javamesh-flowrecord</module>
             </modules>
         </profile>
         <profile>
@@ -42,6 +44,7 @@
             </activation>
             <modules>
                 <module>javamesh-flowcontrol</module>
+                <module>javamesh-server-monitor</module>
             </modules>
         </profile>
         <profile>
@@ -53,10 +56,11 @@
         <profile>
             <id>all</id>
             <modules>
-                <module>skywalking-adaptor</module>
                 <module>javamesh-flowcontrol</module>
-                <module>javamesh-dummy</module>
+
+                <module>javamesh-server-monitor</module>
                 <module>javamesh-example</module>
+                <module>javamesh-flowrecord</module>
             </modules>
         </profile>
     </profiles>
