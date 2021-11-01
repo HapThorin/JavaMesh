@@ -26,15 +26,6 @@
             </modules>
         </profile>
         <profile>
-            <id>backend</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <modules>
-                <module>demo-application</module>
-            </modules>
-        </profile>
-        <profile>
             <id>all</id>
             <modules>
                 <module>demo-plugin</module>

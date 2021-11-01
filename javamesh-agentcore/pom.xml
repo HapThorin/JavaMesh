@@ -40,15 +40,6 @@
             </modules>
         </profile>
         <profile>
-            <id>adaptor</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <modules>
-                <module>javamesh-agentcore-bootstrap</module>
-            </modules>
-        </profile>
-        <profile>
             <id>example</id>
             <properties>
                 <app.env>test</app.env>

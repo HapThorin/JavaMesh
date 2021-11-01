@@ -57,19 +57,11 @@ public class AgentPremain {
                 // 初始化序列化器
                 SerializerHolder.initialize(PluginClassLoader.getDefault());
                 ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
-                ClassLoader spiLoader = ClassLoaderManager.getTargetClassLoader(parent);
+                ClassLoader spiLoader = ClassLoaderManager.getTargetClassLoader(currentClassLoader);
                 // 配置初始化
                 ConfigLoader.initialize(agentArgs, spiLoader);
                 ExtAgentAdaptor.init(agentArgs, instrumentation, LibPathUtils.getAgentPath(),
                         LibPathUtils.getPluginsPath());
-                LopsUrlClassLoader classLoader = (LopsUrlClassLoader) AccessController.doPrivileged(
-                    new PrivilegedAction() {
-                        @Override
-                        public Object run() {
-                            return new LopsUrlClassLoader(urls.toArray(new URL[urls.size()]), null);
-                        }
-                    });
-                ConfigLoader.initialize(agentArgs, ClassLoaderManager.getTargetClassLoader(currentClassLoader));
 
                 // 反射调用BootStrapImpl#main
                 addAgentPath(argsMap);

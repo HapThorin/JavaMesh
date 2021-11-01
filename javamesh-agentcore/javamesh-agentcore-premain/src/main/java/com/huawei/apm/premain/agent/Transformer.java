@@ -1,5 +1,7 @@
 package com.huawei.apm.premain.agent;
 
+import com.huawei.apm.bootstrap.adaptor.ExtAgentAdaptor;
+import com.huawei.apm.bootstrap.adaptor.entity.ExtAgentTransResp;
 import com.huawei.apm.bootstrap.definition.EnhanceDefinition;
 import com.huawei.apm.bootstrap.interceptors.ConstructorInterceptor;
 import com.huawei.apm.bootstrap.interceptors.InstanceMethodInterceptor;
@@ -22,6 +24,7 @@ import net.bytebuddy.implementation.bind.annotation.Morph;
 import net.bytebuddy.matcher.ElementMatchers;
 import net.bytebuddy.utility.JavaModule;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -42,7 +45,13 @@ public class Transformer implements AgentBuilder.Transformer {
             return new BootstrapTransformer(enhanceDefinitionLoader).transform(builder, typeDescription, null, module);
         }
         final Listener listener = enhanceDefinitionLoader.findNameListener(typeDescription);
-        final List<EnhanceDefinition> definitions = enhanceDefinitionLoader.findDefinitions(typeDescription);
+        final List<EnhanceDefinition> definitions =
+                new ArrayList<EnhanceDefinition>(enhanceDefinitionLoader.findDefinitions(typeDescription));
+        final ExtAgentTransResp transform = ExtAgentAdaptor.transform(builder, typeDescription, classLoader);
+        if (!transform.isEmpty()) {
+            definitions.addAll(transform.getDefinitions());
+            builder = transform.getBuilder();
+        }
         if (listener == null && definitions.isEmpty()) {
             return builder;
         }

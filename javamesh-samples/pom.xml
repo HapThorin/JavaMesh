@@ -58,6 +58,7 @@
                 <module>javamesh-flowcontrol</module>
                 <module>javamesh-server-monitor</module>
                 <module>javamesh-flowrecord</module>
+                <module>skywalking-adaptor</module>
             </modules>
         </profile>
     </profiles>
