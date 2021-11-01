@@ -7,14 +7,16 @@
         <groupId>com.huawei.javamesh</groupId>
         <version>1.0.0</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
-    <packaging>pom</packaging>
 
-    <artifactId>javamesh-server-monitor</artifactId>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>javamesh-online-stresstest</artifactId>
+    <version>1.0.0</version>
+
+    <packaging>pom</packaging>
 
     <properties>
         <javamesh.basedir>${pom.basedir}/../../..</javamesh.basedir>
-        <package.sample.name>server-monitor</package.sample.name>
+        <package.sample.name>online-stresstest</package.sample.name>
     </properties>
 
     <profiles>
@@ -24,28 +26,14 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <modules>
-                <module>protocol</module>
-                <module>server-monitor-plugin</module>
+                <module>online-stresstest-plugin</module>
             </modules>
         </profile>
         <profile>
             <id>all</id>
             <modules>
-                <module>protocol</module>
-                <module>server-monitor-plugin</module>
-                <module>metric-server</module>
+                <module>online-stresstest-plugin</module>
             </modules>
         </profile>
     </profiles>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>com.huawei.javamesh</groupId>
-                <artifactId>protocol</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
 </project>
