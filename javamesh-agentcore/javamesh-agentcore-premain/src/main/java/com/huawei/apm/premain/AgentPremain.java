@@ -6,9 +6,7 @@ import com.huawei.apm.bootstrap.adaptor.ExtAgentAdaptor;
 import com.huawei.apm.bootstrap.serialize.SerializerHolder;
 import com.huawei.apm.premain.classloader.ClassLoaderManager;
 import com.huawei.apm.premain.classloader.PluginClassLoader;
-import com.huawei.apm.premain.agent.BootstrapEnhance;
 import com.huawei.apm.premain.agent.ByteBuddyAgentBuilder;
-import com.huawei.apm.premain.agent.NoneNamedListenerBuilder;
 import com.huawei.apm.bootstrap.lubanops.commons.LubanApmConstants;
 import com.huawei.apm.bootstrap.lubanops.log.LogFactory;
 import com.huawei.apm.bootstrap.lubanops.log.LogPathUtils;
@@ -83,12 +81,8 @@ public class AgentPremain {
 
                 // 启动核心服务
                 CoreServiceManager.INSTANCE.initServices();
-                // 针对NoneNamedListener初始化增强
-                NoneNamedListenerBuilder.initialize(instrumentation);
                 // 初始化byte buddy
                 ByteBuddyAgentBuilder.initialize(instrumentation);
-                // 重定义, 使之可被bytebuddy增强
-                BootstrapEnhance.reTransformClasses(instrumentation);
             } else {
                 logger.log(Level.SEVERE, "[APM PREMAIN]The JavaAgent is loaded repeatedly.");
             }

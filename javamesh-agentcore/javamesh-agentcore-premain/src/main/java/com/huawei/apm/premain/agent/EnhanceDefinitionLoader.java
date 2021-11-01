@@ -1,8 +1,10 @@
 package com.huawei.apm.premain.agent;
 
+import com.huawei.apm.bootstrap.common.VersionChecker;
 import com.huawei.apm.bootstrap.definition.EnhanceDefinition;
-import com.huawei.apm.bootstrap.adaptor.ExtAgentAdaptor;
 import com.huawei.apm.bootstrap.lubanops.NamedListener;
+import com.huawei.apm.bootstrap.lubanops.TransformerMethod;
+import com.huawei.apm.bootstrap.lubanops.utils.Util;
 import com.huawei.apm.bootstrap.matcher.ClassMatcher;
 import com.huawei.apm.bootstrap.matcher.NameMatcher;
 import com.huawei.apm.bootstrap.matcher.NonNameMatcher;
@@ -10,7 +12,6 @@ import com.huawei.apm.bootstrap.lubanops.Listener;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,21 +23,22 @@ import static net.bytebuddy.matcher.ElementMatchers.isInterface;
 import static net.bytebuddy.matcher.ElementMatchers.not;
 
 /**
- * 插件加载器 加载NamedListener以及EnhanceDefinition插件
+ * 插件加载器
+ * 加载NamedListener以及EnhanceDefinition插件
  */
 enum EnhanceDefinitionLoader {
     INSTANCE;
 
-    private final Map<String, List<EnhanceDefinition>> nameDefinitions =
-            new HashMap<String, List<EnhanceDefinition>>();
+    private final Map<String, LinkedList<EnhanceDefinition>> nameDefinitions =
+        new HashMap<String, LinkedList<EnhanceDefinition>>();
 
     private final List<EnhanceDefinition> nonNameDefinitions = new LinkedList<EnhanceDefinition>();
 
     /**
-     * key : 增强类 value: 拦截器列表
+     * key : 增强类
+     * value: 拦截器列表
      */
-    private final Map<String, LinkedList<Listener>> originMatchNamedListeners =
-            new HashMap<String, LinkedList<Listener>>();
+    private final Map<String, Listener> originMatchNamedListeners = new HashMap<String, Listener>();
 
     EnhanceDefinitionLoader() {
         load();
@@ -51,7 +53,7 @@ enum EnhanceDefinitionLoader {
             }
             if (classMatcher instanceof NameMatcher) {
                 String className = ((NameMatcher) classMatcher).getClassName();
-                List<EnhanceDefinition> definitions = nameDefinitions.get(className);
+                LinkedList<EnhanceDefinition> definitions = nameDefinitions.get(className);
                 if (definitions == null) {
                     definitions = new LinkedList<EnhanceDefinition>();
                     nameDefinitions.put(className, definitions);
@@ -73,21 +75,19 @@ enum EnhanceDefinitionLoader {
     }
 
     private void resolveNamedListener(Listener listener) {
+        String version = Util.getJarVersionFromProtectionDomain(listener.getClass().getProtectionDomain());
+        if (!new VersionChecker(version, listener).check()) {
+            return;
+        }
         Set<String> classes = listener.getClasses();
-        if (classes == null || classes.size() == 0) {
+        if (classes == null || classes.isEmpty()) {
             return;
         }
         for (String originClass : classes) {
             if (originClass == null || originClass.length() == 0) {
-                return;
+                continue;
             }
-            final String replacedClass = originClass.replace('/', '.');
-            LinkedList<Listener> topListeners = originMatchNamedListeners.get(replacedClass);
-            if (topListeners == null) {
-                topListeners = new LinkedList<Listener>();
-                originMatchNamedListeners.put(replacedClass, topListeners);
-            }
-            topListeners.add(listener);
+            originMatchNamedListeners.put(originClass.replace('/', '.'), new BufferedListener(listener));
         }
     }
 
@@ -111,25 +111,21 @@ enum EnhanceDefinitionLoader {
 
     public ElementMatcher<TypeDescription> buildMatch() {
         ElementMatcher.Junction<TypeDescription> junction =
-                new ElementMatcher.Junction.AbstractBase<TypeDescription>() {
-                    @Override
-                    public boolean matches(TypeDescription target) {
-                        return nameDefinitions.containsKey(target.getActualName())
-                                || originMatchNamedListeners.containsKey(target.getActualName());
-                    }
-                };
+            new ElementMatcher.Junction.AbstractBase<TypeDescription>() {
+                @Override
+                public boolean matches(TypeDescription target) {
+                    return nameDefinitions.containsKey(target.getActualName())
+                            || originMatchNamedListeners.containsKey(target.getActualName());
+                }
+            };
         for (EnhanceDefinition nonNameDefinition : nonNameDefinitions) {
             junction = junction.or(((NonNameMatcher) nonNameDefinition.enhanceClass()).buildJunction());
-        }
-        final ElementMatcher<TypeDescription> elementMatcher = ExtAgentAdaptor.buildMatch();
-        if (elementMatcher != null) {
-            junction = junction.or(elementMatcher);
         }
         return junction.and(not(isInterface()));
     }
 
     public List<EnhanceDefinition> findDefinitions(TypeDescription typeDescription) {
-        List<EnhanceDefinition> matchDefinitions = nameDefinitions.get(typeDescription.getTypeName());
+        LinkedList<EnhanceDefinition> matchDefinitions = nameDefinitions.get(typeDescription.getTypeName());
         if (matchDefinitions == null) {
             matchDefinitions = new LinkedList<EnhanceDefinition>();
         }
@@ -141,12 +137,62 @@ enum EnhanceDefinitionLoader {
         return matchDefinitions;
     }
 
-    public List<Listener> findNameListeners(TypeDescription typeDescription) {
+    public Listener findNameListener(TypeDescription typeDescription) {
         // 适配原始插件
-        LinkedList<Listener> originMatchListeners = originMatchNamedListeners.get(typeDescription.getTypeName());
-        if (originMatchListeners == null) {
-            return Collections.emptyList();
+        return originMatchNamedListeners.get(typeDescription.getTypeName());
+    }
+
+    private static class BufferedListener implements Listener {
+        private volatile boolean initFlag = true;
+        private volatile boolean addTagFlag = true;
+        private final Listener listener;
+
+        private BufferedListener(Listener listener) {
+            this.listener = listener;
         }
-        return originMatchListeners;
+
+        @Override
+        public void init() {
+            if (initFlag) {
+                synchronized (listener) {
+                    if (initFlag) {
+                        listener.init();
+                        initFlag = false;
+                    }
+                }
+            }
+        }
+
+        @Override
+        public Set<String> getClasses() {
+            return listener.getClasses();
+        }
+
+        @Override
+        public List<TransformerMethod> getTransformerMethod() {
+            return listener.getTransformerMethod();
+        }
+
+        @Override
+        public boolean hasAttribute() {
+            return listener.hasAttribute();
+        }
+
+        @Override
+        public List<String> getFields() {
+            return listener.getFields();
+        }
+
+        @Override
+        public void addTag() {
+            if (addTagFlag) {
+                synchronized (listener) {
+                    if (addTagFlag) {
+                        listener.addTag();
+                        addTagFlag = false;
+                    }
+                }
+            }
+        }
     }
 }
