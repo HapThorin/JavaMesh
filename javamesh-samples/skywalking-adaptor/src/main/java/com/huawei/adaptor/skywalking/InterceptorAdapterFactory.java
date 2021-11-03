@@ -4,11 +4,7 @@
 
 package com.huawei.adaptor.skywalking;
 
-import com.huawei.apm.bootstrap.common.BeforeResult;
-import com.huawei.apm.bootstrap.interceptors.ConstructorInterceptor;
-import com.huawei.apm.bootstrap.interceptors.InstanceMethodInterceptor;
-import com.huawei.apm.bootstrap.interceptors.Interceptor;
-import com.huawei.apm.bootstrap.interceptors.StaticMethodInterceptor;
+import java.lang.reflect.Method;
 
 import org.apache.skywalking.apm.agent.core.plugin.interceptor.enhance.EnhancedInstance;
 import org.apache.skywalking.apm.agent.core.plugin.interceptor.enhance.InstanceConstructorInterceptor;
@@ -16,15 +12,21 @@ import org.apache.skywalking.apm.agent.core.plugin.interceptor.enhance.InstanceM
 import org.apache.skywalking.apm.agent.core.plugin.interceptor.enhance.MethodInterceptResult;
 import org.apache.skywalking.apm.agent.core.plugin.interceptor.enhance.StaticMethodsAroundInterceptor;
 
-import java.lang.reflect.Method;
+import com.huawei.apm.core.agent.common.BeforeResult;
+import com.huawei.apm.core.agent.interceptor.ConstructorInterceptor;
+import com.huawei.apm.core.agent.interceptor.InstanceMethodInterceptor;
+import com.huawei.apm.core.agent.interceptor.Interceptor;
+import com.huawei.apm.core.agent.interceptor.StaticMethodInterceptor;
 
 /**
- * <p>将skyWalking的拦截器定义{@link StaticMethodsAroundInterceptor}, {@link InstanceConstructorInterceptor}, {@link InstanceMethodsAroundInterceptor}
+ * <p>将skyWalking的拦截器定义{@link StaticMethodsAroundInterceptor}, {@link InstanceConstructorInterceptor}, {@link
+ * InstanceMethodsAroundInterceptor}
  * 转换成 {@link Interceptor}</p>
  * <p>提供三个静态方法用于转换,分别如下: </p>
  * <p>{@link InterceptorAdapterFactory#adapter(StaticMethodsAroundInterceptor)} 得到 {@link StaticMethodInterceptor}</p>
  * <p>{@link InterceptorAdapterFactory#adapter(InstanceConstructorInterceptor)} 得到 {@link ConstructorInterceptor}</p>
- * <p>{@link InterceptorAdapterFactory#adapter(InstanceMethodsAroundInterceptor)} 得到 {@link InstanceMethodInterceptor}</p>
+ * <p>{@link InterceptorAdapterFactory#adapter(InstanceMethodsAroundInterceptor)} 得到 {@link
+ * InstanceMethodInterceptor}</p>
  *
  * @author y30010171
  * @since 2021-09-28
@@ -87,9 +89,11 @@ public class InterceptorAdapterFactory {
         }
 
         @Override
-        public void before(Class<?> clazz, Method method, Object[] arguments, BeforeResult beforeResult) throws Exception {
+        public void before(Class<?> clazz, Method method, Object[] arguments, BeforeResult beforeResult)
+                throws Exception {
             MethodInterceptResult methodInterceptResult = new MethodInterceptResult();
-            staticMethodsAroundInterceptor.beforeMethod(clazz, method, arguments, getAllClasses(arguments), methodInterceptResult);
+            staticMethodsAroundInterceptor.beforeMethod(clazz, method, arguments, getAllClasses(arguments),
+                    methodInterceptResult);
             if (!methodInterceptResult.isContinue()) {
                 beforeResult.setResult(methodInterceptResult._ret());
             }
@@ -97,7 +101,8 @@ public class InterceptorAdapterFactory {
 
         @Override
         public Object after(Class<?> clazz, Method method, Object[] arguments, Object result) throws Exception {
-            return staticMethodsAroundInterceptor.afterMethod(clazz, method, arguments, getAllClasses(arguments), result);
+            return staticMethodsAroundInterceptor.afterMethod(clazz, method, arguments, getAllClasses(arguments),
+                    result);
         }
 
         @Override
@@ -132,7 +137,8 @@ public class InterceptorAdapterFactory {
         public void before(Object obj, Method method, Object[] arguments, BeforeResult beforeResult) throws Exception {
             MethodInterceptResult methodInterceptResult = new MethodInterceptResult();
             try {
-                instanceMethodsAroundInterceptor.beforeMethod((EnhancedInstance) obj, method, arguments, getAllClasses(arguments), methodInterceptResult);
+                instanceMethodsAroundInterceptor.beforeMethod((EnhancedInstance) obj, method, arguments,
+                        getAllClasses(arguments), methodInterceptResult);
             } catch (Throwable throwable) {
                 throw new Exception(throwable);
             }
@@ -144,7 +150,8 @@ public class InterceptorAdapterFactory {
         @Override
         public Object after(Object obj, Method method, Object[] arguments, Object result) throws Exception {
             try {
-                return instanceMethodsAroundInterceptor.afterMethod((EnhancedInstance) obj, method, arguments, getAllClasses(arguments), result);
+                return instanceMethodsAroundInterceptor.afterMethod((EnhancedInstance) obj, method, arguments,
+                        getAllClasses(arguments), result);
             } catch (Throwable throwable) {
                 throw new Exception(throwable);
             }
@@ -152,7 +159,8 @@ public class InterceptorAdapterFactory {
 
         @Override
         public void onThrow(Object obj, Method method, Object[] arguments, Throwable t) {
-            instanceMethodsAroundInterceptor.handleMethodException((EnhancedInstance) obj, method, arguments, getAllClasses(arguments), t);
+            instanceMethodsAroundInterceptor.handleMethodException((EnhancedInstance) obj, method, arguments,
+                    getAllClasses(arguments), t);
         }
     }
 }

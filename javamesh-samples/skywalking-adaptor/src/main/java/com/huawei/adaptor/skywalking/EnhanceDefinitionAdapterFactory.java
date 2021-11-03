@@ -4,11 +4,6 @@
 
 package com.huawei.adaptor.skywalking;
 
-import com.huawei.apm.bootstrap.definition.EnhanceDefinition;
-import com.huawei.apm.bootstrap.definition.MethodInterceptPoint;
-import com.huawei.apm.bootstrap.matcher.ClassMatcher;
-import com.huawei.apm.bootstrap.matcher.NameMatcher;
-import com.huawei.apm.bootstrap.lubanops.log.LogFactory;
 import org.apache.skywalking.apm.agent.core.plugin.AbstractClassEnhancePluginDefine;
 import org.apache.skywalking.apm.agent.core.plugin.interceptor.ConstructorInterceptPoint;
 import org.apache.skywalking.apm.agent.core.plugin.interceptor.InstanceMethodsInterceptPoint;
@@ -18,6 +13,12 @@ import org.apache.skywalking.apm.agent.core.plugin.match.ClassMatch;
 import java.lang.reflect.Method;
 import java.util.Locale;
 import java.util.logging.Logger;
+
+import com.huawei.apm.core.agent.definition.EnhanceDefinition;
+import com.huawei.apm.core.agent.definition.MethodInterceptPoint;
+import com.huawei.apm.core.agent.matcher.ClassMatcher;
+import com.huawei.apm.core.agent.matcher.NameMatcher;
+import com.huawei.apm.core.lubanops.bootstrap.log.LogFactory;
 
 /**
  * <p>提供一个静态方法{@link EnhanceDefinitionAdapterFactory#adapter(AbstractClassEnhancePluginDefine)},

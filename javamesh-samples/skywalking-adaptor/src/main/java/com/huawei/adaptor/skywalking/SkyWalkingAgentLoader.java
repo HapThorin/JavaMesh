@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.huawei.apm.bootstrap.lubanops.log.LogFactory;
 import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.description.method.MethodDescription;
@@ -33,14 +32,15 @@ import org.apache.skywalking.apm.agent.core.plugin.interceptor.enhance.InstanceM
 import org.apache.skywalking.apm.agent.core.plugin.interceptor.enhance.StaticMethodsAroundInterceptor;
 import org.apache.skywalking.apm.agent.core.plugin.loader.AgentClassLoader;
 
-import com.huawei.apm.bootstrap.adaptor.ExtAgentLoader;
-import com.huawei.apm.bootstrap.adaptor.ExtAgentAdaptor;
-import com.huawei.apm.bootstrap.adaptor.entity.ExtAgentTransResp;
-import com.huawei.apm.bootstrap.definition.EnhanceDefinition;
-import com.huawei.apm.bootstrap.interceptors.ConstructorInterceptor;
-import com.huawei.apm.bootstrap.interceptors.InstanceMethodInterceptor;
-import com.huawei.apm.bootstrap.interceptors.Interceptor;
-import com.huawei.apm.bootstrap.interceptors.StaticMethodInterceptor;
+import com.huawei.apm.core.adaptor.ExtAgentAdaptor;
+import com.huawei.apm.core.adaptor.ExtAgentLoader;
+import com.huawei.apm.core.adaptor.entity.ExtAgentTransResp;
+import com.huawei.apm.core.agent.definition.EnhanceDefinition;
+import com.huawei.apm.core.agent.interceptor.ConstructorInterceptor;
+import com.huawei.apm.core.agent.interceptor.InstanceMethodInterceptor;
+import com.huawei.apm.core.agent.interceptor.Interceptor;
+import com.huawei.apm.core.agent.interceptor.StaticMethodInterceptor;
+import com.huawei.apm.core.lubanops.bootstrap.log.LogFactory;
 
 /**
  * SkyWalking的agent加载策略

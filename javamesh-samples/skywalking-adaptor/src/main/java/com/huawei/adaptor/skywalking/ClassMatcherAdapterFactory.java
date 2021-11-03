@@ -11,9 +11,9 @@ import org.apache.skywalking.apm.agent.core.plugin.match.ClassMatch;
 import org.apache.skywalking.apm.agent.core.plugin.match.IndirectMatch;
 import org.apache.skywalking.apm.agent.core.plugin.match.NameMatch;
 
-import com.huawei.apm.bootstrap.matcher.ClassMatcher;
-import com.huawei.apm.bootstrap.matcher.NameMatcher;
-import com.huawei.apm.bootstrap.matcher.NonNameMatcher;
+import com.huawei.apm.core.agent.matcher.ClassMatcher;
+import com.huawei.apm.core.agent.matcher.NameMatcher;
+import com.huawei.apm.core.agent.matcher.NonNameMatcher;
 
 /**
  * <p>提供一个静态方法{@link ClassMatcherAdapterFactory#adapter(ClassMatch)},用于将skyWalking中的 {@link ClassMatch} 转换成 {@link ClassMatcher}</p>
