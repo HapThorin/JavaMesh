@@ -30,7 +30,7 @@ public class KafkaConsumerEnhance implements EnhanceDefinition {
     @Override
     public MethodInterceptPoint[] getMethodInterceptPoints() {
         return new MethodInterceptPoint[]{MethodInterceptPoint.newInstMethodInterceptPoint(INTERCEPT_CLASS,
-                ElementMatchers.named("createRawConsumer"))
+                ElementMatchers.named("createConsumer"))
         };
     }
 }

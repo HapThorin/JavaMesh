@@ -22,7 +22,10 @@ public class KafkaConsumerInterceptor implements InstanceMethodInterceptor {
 
     @Override
     public Object after(Object obj, Method method, Object[] arguments, Object result) {
-        return new ShadowConsumer((KafkaConsumer)result);
+        if (result instanceof ShadowConsumer) {
+            return result;
+        }
+        return new ShadowConsumer<>((KafkaConsumer<?, ?>)result);
     }
 
     @Override

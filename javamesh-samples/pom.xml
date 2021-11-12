@@ -25,6 +25,7 @@
                 <module>javamesh-flowcontrol</module>
                 <module>javamesh-server-monitor</module>
                 <module>javamesh-flowrecord</module>
+                <module>javamesh-route</module>
                 <module>javamesh-threadlocal</module>
                 <module>javamesh-online-stresstest</module>
                 <module>skywalking-adaptor</module>
@@ -54,6 +55,7 @@
                 <module>javamesh-flowcontrol</module>
                 <module>javamesh-server-monitor</module>
                 <module>javamesh-flowrecord</module>
+                <module>javamesh-route</module>
                 <module>javamesh-threadlocal</module>
                 <module>javamesh-online-stresstest</module>
                 <module>skywalking-adaptor</module>
