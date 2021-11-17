@@ -41,7 +41,7 @@ import com.huawei.apm.core.adaptor.utils.IOUtil;
 import com.huawei.apm.core.adaptor.utils.StringUtil;
 import com.huawei.apm.core.agent.definition.EnhanceDefinition;
 import com.huawei.apm.core.agent.interceptor.Interceptor;
-import com.huawei.apm.core.config.ConfigLoader;
+import com.huawei.apm.core.config.ConfigManager;
 import com.huawei.apm.core.lubanops.bootstrap.log.LogFactory;
 
 /**
@@ -106,7 +106,7 @@ public abstract class ExtAgentAdaptor {
      */
     private static boolean doInit(String agentArgs, Instrumentation instrumentation, String agentPath,
             String pluginsPath) {
-        final ExtAgentConfig config = ConfigLoader.getConfig(ExtAgentConfig.class);
+        final ExtAgentConfig config = ConfigManager.getConfig(ExtAgentConfig.class);
         if (!config.isLoadExtAgent()) {
             return false;
         }

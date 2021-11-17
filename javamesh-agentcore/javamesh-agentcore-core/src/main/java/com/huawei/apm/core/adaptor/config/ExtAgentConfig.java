@@ -9,8 +9,8 @@ import java.security.AccessController;
 
 import sun.security.action.GetPropertyAction;
 
-import com.huawei.apm.core.config.BaseConfig;
-import com.huawei.apm.core.config.ConfigTypeKey;
+import com.huawei.apm.core.config.common.BaseConfig;
+import com.huawei.apm.core.config.common.ConfigTypeKey;
 
 /**
  * 额外agent的配置，配置前缀为{@code ext.agent}
