@@ -13,6 +13,6 @@ package com.huawei.apm.premain.exception;
  */
 public class InitPremainException extends RuntimeException {
     public InitPremainException(Exception e) {
-        super("[" + e.getClass().getSimpleName() + "]" + e.getMessage());
+        super("[" + e.getClass().getSimpleName() + "] " + e.getMessage());
     }
 }

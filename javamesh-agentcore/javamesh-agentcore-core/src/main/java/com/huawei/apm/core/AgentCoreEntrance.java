@@ -12,7 +12,6 @@ import com.huawei.apm.core.common.PathIndexer;
 import com.huawei.apm.core.config.ConfigManager;
 import com.huawei.apm.core.lubanops.core.BootStrapImpl;
 import com.huawei.apm.core.plugin.PluginManager;
-import com.huawei.apm.core.serialize.SerializerHolder;
 import com.huawei.apm.core.service.ServiceManager;
 
 /**
@@ -33,8 +32,6 @@ public class AgentCoreEntrance {
     public static void run(Map<String, Object> argsMap, Instrumentation instrumentation) throws Exception {
         // 初始化路径
         PathIndexer.build(argsMap);
-        // 初始化序列化器
-        SerializerHolder.initialize();
         // 初始化统一配置
         ConfigManager.initialize(argsMap);
 

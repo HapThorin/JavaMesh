@@ -15,7 +15,6 @@ import java.util.logging.Logger;
 import com.huawei.apm.core.common.PathIndexer;
 import com.huawei.apm.core.config.common.BaseConfig;
 import com.huawei.apm.core.config.strategy.LoadConfigStrategy;
-import com.huawei.apm.core.config.utils.ConfigBufferedUtil;
 import com.huawei.apm.core.config.utils.ConfigKeyUtil;
 import com.huawei.apm.core.lubanops.bootstrap.log.LogFactory;
 
@@ -50,37 +49,8 @@ public abstract class ConfigManager {
      * @param <R> 配置对象泛型
      * @return 配置对象
      */
-    public static synchronized <R extends BaseConfig> R getConfig(Class<R> cls) {
-        final ClassLoader classLoader = cls.getClassLoader();
-        final String typeKey = ConfigKeyUtil.getTypeKey(cls);
-        final String clTypeKey = ConfigKeyUtil.getCLTypeKey(typeKey, classLoader);
-        BaseConfig clConfig = CONFIG_MAP.get(clTypeKey);
-        if (clConfig == null || !cls.isAssignableFrom(clConfig.getClass())) {
-            BaseConfig config = CONFIG_MAP.get(typeKey);
-            if (config != null) {
-                clConfig = ConfigBufferedUtil.getProxy(
-                        config.getClass().getClassLoader() == classLoader ?
-                                config : ConfigBufferedUtil.getSerialize(config, cls),
-                        classLoader);
-            } else {
-                clConfig = newDefaultConfig(cls);
-            }
-            CONFIG_MAP.put(clTypeKey, clConfig);
-        }
-        return (R) clConfig;
-    }
-
-    private static BaseConfig newDefaultConfig(Class<? extends BaseConfig> cls) {
-        try {
-            LOGGER.log(Level.INFO, String.format(Locale.ROOT,
-                    "Missing configured instance of [%s], create empty one.", cls.getName()));
-            return cls.newInstance();
-        } catch (InstantiationException ignored) {
-        } catch (IllegalAccessException ignored) {
-        }
-        LOGGER.log(Level.WARNING, String.format(Locale.ROOT,
-                "Create empty configured instance of [%s] failed, please check.", cls.getName()));
-        return null;
+    public static <R extends BaseConfig> R getConfig(Class<R> cls) {
+        return (R) CONFIG_MAP.get(ConfigKeyUtil.getTypeKey(cls));
     }
 
     /**

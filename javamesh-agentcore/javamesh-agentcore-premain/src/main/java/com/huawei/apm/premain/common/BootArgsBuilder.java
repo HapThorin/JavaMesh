@@ -7,6 +7,7 @@ package com.huawei.apm.premain.common;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -32,7 +33,7 @@ public abstract class BootArgsBuilder {
      */
     public static Map<String, Object> build(String agentArgs) {
         final Properties configMap = loadConfig();
-        final Map<String, Object> argsMap = new HashMap<String, Object>(toArgsMap(agentArgs));
+        final Map<String, Object> argsMap = toArgsMap(agentArgs);
         addNotNullEntries(argsMap, configMap);
         addNormalEntries(argsMap, configMap);
         addSpeEntries(argsMap, configMap);
@@ -46,8 +47,11 @@ public abstract class BootArgsBuilder {
      * @param args 程序入参
      * @return 入参集
      */
-    private static Map<String, String> toArgsMap(String args) {
-        final Map<String, String> argsMap = new HashMap<String, String>();
+    private static Map<String, Object> toArgsMap(String args) {
+        final Map<String, Object> argsMap = new HashMap<String, Object>();
+        if (args == null) {
+            return argsMap;
+        }
         for (String arg : args.trim().split(",")) {
             final int index = arg.indexOf('=');
             if (index >= 0) {

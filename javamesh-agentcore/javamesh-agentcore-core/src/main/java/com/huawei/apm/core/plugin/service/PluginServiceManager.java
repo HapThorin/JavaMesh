@@ -18,8 +18,9 @@ import com.huawei.apm.core.service.ServiceManager;
 public class PluginServiceManager extends ServiceManager {
     public static void initPluginService(ClassLoader classLoader) {
         for (PluginService service : ServiceLoader.load(PluginService.class, classLoader)) {
-            loadService(service, service.getClass(), PluginService.class);
-            service.start();
+            if (loadService(service, service.getClass(), PluginService.class)) {
+                service.start();
+            }
         }
     }
 }

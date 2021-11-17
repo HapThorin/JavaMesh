@@ -25,8 +25,8 @@ public class SpiLoadUtil {
      * @param <T>   目标类型
      * @return 最优实现
      */
-    public static <T> T getImpl(Class<T> clazz) {
-        return getImpl(clazz, ClassLoader.getSystemClassLoader());
+    public static <T> T getBestImpl(Class<T> clazz) {
+        return getBestImpl(clazz, ClassLoader.getSystemClassLoader());
     }
 
     /**
@@ -35,38 +35,48 @@ public class SpiLoadUtil {
      * @param clazz       spi目标类
      * @param classLoader 查找的ClassLoader
      * @return 最优实现
-     * @return 最优实现
      */
-    public static <T> T getImpl(Class<T> clazz, ClassLoader classLoader) {
+    public static <T> T getBestImpl(Class<T> clazz, ClassLoader classLoader) {
         T impl = null;
         for (T newImpl : ServiceLoader.load(clazz, classLoader)) {
-            impl = compare(impl, newImpl) ? newImpl : impl;
+            impl = getBetter(impl, newImpl);
         }
         return impl;
+    }
+
+    public static <T> T getBetter(T src, T dst) {
+        return getBetter(src, dst, new WeightEqualHandler<T>() {
+            @Override
+            public T handle(T source, T target) {
+                return source;
+            }
+        });
     }
 
     /**
      * 比较权重，返回真时取后者，否则取前者
      *
-     * @param source 比较源
-     * @param target 比较目标
-     * @param <T>    类型
+     * @param src 比较源
+     * @param dst 比较目标
+     * @param <T> 类型
      * @return 返回真时取后者，否则取前者
      */
-    public static <T> boolean compare(T source, T target) {
-        if (target == null) {
-            return false;
-        } else if (source == null) {
-            return true;
+    public static <T> T getBetter(T src, T dst, WeightEqualHandler<T> handler) {
+        if (dst == null) {
+            return src;
+        } else if (src == null) {
+            return dst;
         } else {
-            final SpiWeight sourceWeight = source.getClass().getAnnotation(SpiWeight.class);
-            final SpiWeight targetWeight = target.getClass().getAnnotation(SpiWeight.class);
-            if (targetWeight == null) {
-                return false;
-            } else if (sourceWeight == null) {
-                return true;
+            final SpiWeight srcWeight = src.getClass().getAnnotation(SpiWeight.class);
+            final int srcWeightVal = srcWeight == null ? Integer.MIN_VALUE : srcWeight.value();
+            final SpiWeight dstWeight = dst.getClass().getAnnotation(SpiWeight.class);
+            final int dstWeightVal = dstWeight == null ? Integer.MIN_VALUE : dstWeight.value();
+            if (srcWeightVal > dstWeightVal) {
+                return src;
+            } else if (srcWeightVal < dstWeightVal) {
+                return dst;
             } else {
-                return sourceWeight.value() < targetWeight.value();
+                return handler.handle(src, dst);
             }
         }
     }
@@ -78,5 +88,9 @@ public class SpiLoadUtil {
     @Target(ElementType.TYPE)
     public @interface SpiWeight {
         int value() default 0;
+    }
+
+    public interface WeightEqualHandler<T> {
+        T handle(T source, T target);
     }
 }

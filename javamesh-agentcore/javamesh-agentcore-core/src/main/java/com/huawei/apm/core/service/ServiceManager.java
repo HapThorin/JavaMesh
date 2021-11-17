@@ -8,9 +8,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.ServiceLoader;
-import java.util.logging.Logger;
 
-import com.huawei.apm.core.lubanops.bootstrap.log.LogFactory;
+import com.huawei.apm.core.exception.DupServiceManager;
 import com.huawei.apm.core.util.SpiLoadUtil;
 
 /**
@@ -23,8 +22,9 @@ public class ServiceManager {
 
     public static void initServices() {
         for (final BaseService service : ServiceLoader.load(BaseService.class)) {
-            loadService(service, service.getClass(), BaseService.class);
-            service.start();
+            if (loadService(service, service.getClass(), BaseService.class)) {
+                service.start();
+            }
         }
         // 加载完所有服务再启动服务
         addStopHook();
@@ -35,22 +35,36 @@ public class ServiceManager {
         if (baseService != null && serviceClass.isAssignableFrom(baseService.getClass())) {
             return (T) baseService;
         }
-        throw new IllegalArgumentException("Service instance of [" +serviceClass+ "] is not found. ");
+        throw new IllegalArgumentException("Service instance of [" + serviceClass + "] is not found. ");
     }
 
-    protected static void loadService(BaseService service, Class<?> serviceCls,
+    protected static boolean loadService(BaseService service, Class<?> serviceCls,
             Class<? extends BaseService> baseCls) {
         if (serviceCls == null || serviceCls == baseCls || !baseCls.isAssignableFrom(serviceCls)) {
-            return;
+            return false;
         }
-        loadService(service, serviceCls.getSuperclass(), baseCls);
-        for (Class<?> interfaceCls : serviceCls.getInterfaces()) {
-            loadService(service, interfaceCls, baseCls);
+        final String serviceName = serviceCls.getName();
+        final BaseService oldService = services.get(serviceName);
+        if (oldService != null && oldService.getClass() == service.getClass()) {
+            return false;
         }
-        String serviceName = serviceCls.getName();
-        if (SpiLoadUtil.compare(services.get(serviceName), service)) {
+        boolean flag = false;
+        final BaseService betterService = SpiLoadUtil.getBetter(oldService, service,
+                new SpiLoadUtil.WeightEqualHandler<BaseService>() {
+                    @Override
+                    public BaseService handle(BaseService source, BaseService target) {
+                        throw new DupServiceManager(serviceName);
+                    }
+                });
+        if (betterService != oldService) {
             services.put(serviceName, service);
+            flag = true;
         }
+        flag |= loadService(service, serviceCls.getSuperclass(), baseCls);
+        for (Class<?> interfaceCls : serviceCls.getInterfaces()) {
+            flag |= loadService(service, interfaceCls, baseCls);
+        }
+        return flag;
     }
 
     private static void addStopHook() {
