@@ -8,8 +8,8 @@ import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.huawei.apm.core.classloader.PluginClassLoader;
 import com.huawei.apm.core.lubanops.bootstrap.log.LogFactory;
+import com.huawei.apm.core.util.SpiLoadUtil;
 
 /**
  * 序列化管理者，提供对ClassLoader键消息传递的类型转换方法
@@ -45,8 +45,13 @@ public class SerializerHolder {
         initFlag = true;
     }
 
+    /**
+     * 查找序列化器
+     *
+     * @return 系列化器
+     */
     private static Serializer getSerializer() {
-        final Serializer serializer = PluginClassLoader.getImpl(Serializer.class);
+        final Serializer serializer = SpiLoadUtil.getImpl(Serializer.class);
         if (serializer == null) {
             LOGGER.log(Level.WARNING, String.format(Locale.ROOT, "Missing implement of [%s], use [%s].",
                     Serializer.class.getName(), Serializer.DefaultSerializer.class.getName()));
