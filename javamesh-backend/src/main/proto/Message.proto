@@ -1,5 +1,5 @@
 syntax = "proto3";
-option java_package = "com.huawei.apm.backend.pojo";
+option java_package = "com.huawei.javamesh.backend.pojo";
 
 message NettyMessage{
 
@@ -27,6 +27,10 @@ message ServiceData{
     SERVER_MONITOR = 4;
     ORACLE_JVM_MONITOR = 5;
     IBM_JVM_MONITOR = 6;
+    AGENT_REGISTRATION = 7;
+    AGENT_MONITOR = 8;
+    AGENT_SPAN_EVENT = 9;
+    DRUID_MONITOR = 10;
   }
   DataType dataType = 1;
   bytes data = 2;
