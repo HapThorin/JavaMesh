@@ -6,7 +6,7 @@
 [![CI/IT Tests](https://github.com/huaweicloud/Sermant/workflows/Java%20CI%20with%20Maven/badge.svg?branch=develop)](https://github.com/huaweicloud/Sermant/actions?query=workflow:Java%20CI%20with%20Maven%20event:push%20branch:develop)
 ## What is Sermant
 
-**Sermant** is a proxyless service mesh technology based on JavaAgent . It leverages the [JavaAgent](https://docs.oracle.com/javase/8/docs/api/java/lang/instrument/package-summary.html) to instrument the host application with enhanced service governance function, in order to solve the service governance problem, in the massive micro-service architecture.
+**Sermant** is a proxyless **ser**vice **m**esh technology based on J**a**vaAge**nt** . It leverages the [JavaAgent](https://docs.oracle.com/javase/8/docs/api/java/lang/instrument/package-summary.html) to instrument the host application with enhanced service governance function, in order to solve the service governance problem, in the massive micro-service architecture.
 
 Sermant's purpose also includes building a plugin-development ecosystem to help developers develop the service governance function more easily while not interfering the business code. The Sermant architecture is depicted as follows.
 
@@ -24,8 +24,8 @@ A microservice architecture using Sermant has the following has the following th
 ![pic](docs/binary-docs/sermant-rt-arch.png)
 
 - Sermant Javaagent: dynamically instrument the application for the service governance capability.
-- Sermant Backend：provide the connection and the pre-processing service for the Javaagents' all uploaded-data.
-- Dynamic configuration center：Providing the instructions by dynamically update the config to the listening Javaagent. Dynamic configuration center is not directly provided by Sermant project. The projects currently support servicecomb-kie, etc.
+- Sermant Backend: provide the connection and the pre-processing service for the Javaagents' all uploaded-data.
+- Dynamic configuration center: Providing the instructions by dynamically update the config to the listening Javaagent. Dynamic configuration center is not directly provided by Sermant project. The projects currently support servicecomb-kie, etc.
 
 
 ## Quick start
@@ -60,18 +60,18 @@ java -jar sermant-agent-x.x.x/server/sermant/sermant-backend-x.x.x.jar
 java -jar sermant-agent-x.x.x\server\sermant\sermant-backend-x.x.x.jar
 ```
 
-Start **Sermant** demo project：
+Start **Sermant** demo project: 
 
 ```shell
 # Run under Linux
-java -cp sermant-samples/sermant-example/demo-application/target/demo-application.jar \
+java -cp sermant-plugins/sermant-example/demo-application/target/demo-application.jar \
   -javaagent:sermant-agent-x.x.x/agent/sermant-agent.jar=appName=test \
   com.huawei.example.demo.DemoApplication
 ```
 
 ```shell
-# Windows下执行
-java -cp ..\sermant-samples\sermant-example\demo-application\target\demo-application.jar ^
+# Run under Windows
+java -cp sermant-plugins\sermant-example\demo-application\target\demo-application.jar ^
   -javaagent:sermant-agent-x.x.x\agent\sermant-agent.jar=appName=test ^
   com.huawei.example.demo.DemoApplication
 ```
