@@ -3,6 +3,8 @@ name: Auto Close Stale Issues and PRs
 on:
   schedule:
     - cron: "0 0 * * *"
+  push:
+  pull_request:
 
 jobs:
   stale:
