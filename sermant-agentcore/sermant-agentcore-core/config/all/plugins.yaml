@@ -10,3 +10,4 @@ plugins:
   - register-center
 adaptors:
   - lubanops
+  - skywalking

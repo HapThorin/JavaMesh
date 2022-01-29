@@ -1,0 +1,16 @@
+adaptorName: skywalking
+adaptorLoadType: SYSTEM
+rewriteStrategy: INCREMENT
+adaptorJar: sermant-skywalking-adaptor-*.jar
+executeEnvDir: temp
+fileMappings:
+  - sourcePattern: config/agent.config
+    targetPattern: config/agent.config
+  - sourcePattern: plugin
+    targetPattern: plugins
+packageMappings:
+  - sourcePattern: org.apache.skywalking.apm.dependencies.net.bytebuddy
+    targetPattern: com.huawei.sermant.dependencies.net.bytebuddy
+  - sourcePattern: org.apache.skywalking
+    targetPattern: com.huawei.sermant.skywalking.org.apache.skywalking
+agentMainArg:

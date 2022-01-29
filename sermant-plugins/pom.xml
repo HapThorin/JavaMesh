@@ -1,6 +1,9 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <modules>
+        <module>sermant-skywalking-adaptor</module>
+    </modules>
     <parent>
         <groupId>com.huawei.sermant</groupId>
         <artifactId>sermant</artifactId>
@@ -38,6 +41,7 @@
                 <module>sermant-online-stresstest</module>
                 <module>sermant-register-center</module>
                 <module>sermant-luban-adaptor</module>
+                <module>sermant-skywalking-adaptor</module>
             </modules>
         </profile>
         <profile>
@@ -70,6 +74,7 @@
                 <module>sermant-online-stresstest</module>
                 <module>sermant-register-center</module>
                 <module>sermant-luban-adaptor</module>
+                <module>sermant-skywalking-adaptor</module>
             </modules>
         </profile>
     </profiles>
