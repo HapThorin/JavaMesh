@@ -41,8 +41,10 @@ import net.bytebuddy.utility.JavaModule;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -62,6 +64,11 @@ public class BootstrapTransformer implements AgentBuilder.Transformer {
      * 日志
      */
     private static final Logger LOGGER = LoggerFactory.getLogger();
+
+    /**
+     * 拦截器全局集
+     */
+    private static final Map<String, List<Interceptor>> INTERCEPTOR_GLOBAL_MAP = new HashMap<>();
 
     /**
      * 拦截定义数组
@@ -173,10 +180,19 @@ public class BootstrapTransformer implements AgentBuilder.Transformer {
     private DynamicType.Builder<?> resolve(DynamicType.Builder<?> builder, MethodDescription.InDefinedShape methodDesc,
             List<Interceptor> interceptors, Class<?> templateCls, ClassLoader classLoader)
             throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, NoSuchFieldException {
-        final byte[] adviceClsBytes = createAdviceClass(templateCls, getAdviceClassName(templateCls, methodDesc));
-        final Class<?> adviceCls = defineAdviceClass(classLoader, adviceClsBytes);
-        prepareAdviceClass(adviceCls, interceptors);
-        return visitAdvice(builder, methodDesc, adviceCls, adviceClsBytes);
+        final String adviceClassName = getAdviceClassName(templateCls, methodDesc);
+        List<Interceptor> globalInterceptors = INTERCEPTOR_GLOBAL_MAP.get(adviceClassName);
+        if (globalInterceptors == null) {
+            globalInterceptors = new ArrayList<>(interceptors);
+            INTERCEPTOR_GLOBAL_MAP.put(adviceClassName, globalInterceptors);
+            final byte[] adviceClsBytes = createAdviceClass(templateCls, adviceClassName);
+            final Class<?> adviceCls = defineAdviceClass(adviceClassName, classLoader, adviceClsBytes);
+            prepareAdviceClass(adviceCls, interceptors);
+            return visitAdvice(builder, methodDesc, adviceCls, adviceClsBytes);
+        } else {
+            globalInterceptors.addAll(interceptors);
+            return builder;
+        }
     }
 
     /**
@@ -211,6 +227,7 @@ public class BootstrapTransformer implements AgentBuilder.Transformer {
     /**
      * 通过字节码，使用ClassLoader定义增强Adviser
      *
+     * @param adviceClassName 增强Advice的全限定名
      * @param classLoader    被增强类的ClassLoader
      * @param adviceClsBytes 增强Adviser的字节码
      * @return 增强Adviser的Class
@@ -218,9 +235,9 @@ public class BootstrapTransformer implements AgentBuilder.Transformer {
      * @throws IllegalAccessException    无法访问defineClass方法，正常不会报出
      * @throws NoSuchMethodException     无法找到defineClass方法，正常不会报出
      */
-    private Class<?> defineAdviceClass(ClassLoader classLoader, byte[] adviceClsBytes)
+    private Class<?> defineAdviceClass(String adviceClassName, ClassLoader classLoader, byte[] adviceClsBytes)
             throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        return ClassLoaderUtils.defineClass(classLoader, adviceClsBytes);
+        return ClassLoaderUtils.defineClass(adviceClassName, classLoader, adviceClsBytes);
     }
 
     /**
