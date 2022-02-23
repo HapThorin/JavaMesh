@@ -16,10 +16,10 @@
 
 package com.huawei.gray.feign.interceptor;
 
+import com.huawei.gray.feign.service.LoadBalancerClientService;
 import com.huawei.sermant.core.agent.common.BeforeResult;
 import com.huawei.sermant.core.agent.interceptor.InstanceMethodInterceptor;
 import com.huawei.sermant.core.service.ServiceManager;
-import com.huawei.gray.feign.service.LoadBalancerClientService;
 
 import java.lang.reflect.Method;
 
@@ -35,9 +35,9 @@ public class LoadBalancerClientInterceptor implements InstanceMethodInterceptor 
     /**
      * 拦截获取下游服务名称，并存放到线程变量中
      *
-     * @param obj          拦截对象
-     * @param method       拦截方法
-     * @param arguments    方法参数
+     * @param obj 拦截对象
+     * @param method 拦截方法
+     * @param arguments 方法参数
      * @param beforeResult change this result, if you want to truncate the method.
      */
     @Override
@@ -52,7 +52,7 @@ public class LoadBalancerClientInterceptor implements InstanceMethodInterceptor 
     }
 
     @Override
-    public void onThrow(Object obj, Method method, Object[] arguments, Throwable t) {
-        loadBalancerClientService.onThrow(obj, method, arguments, t);
+    public void onThrow(Object obj, Method method, Object[] arguments, Throwable th) {
+        loadBalancerClientService.onThrow(obj, method, arguments, th);
     }
 }

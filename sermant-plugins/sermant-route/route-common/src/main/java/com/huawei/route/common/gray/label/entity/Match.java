@@ -24,9 +24,10 @@ import java.util.Map;
 /**
  * 匹配规则
  *
- * @author pengyuyi
+ * @author provenceee
  * @since 2021/10/27
  */
+@SuppressWarnings("checkstyle:RegexpSingleline")
 public class Match {
     /**
      * 来源，即目标应用的上游应用

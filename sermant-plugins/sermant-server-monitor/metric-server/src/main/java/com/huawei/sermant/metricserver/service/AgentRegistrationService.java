@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.stream.Collectors;
 
 /**
  * Agent注册信息服务
@@ -124,20 +123,4 @@ public class AgentRegistrationService {
     private String generateRegKey(String service, String serviceInstance) {
         return service + "@" + serviceInstance;
     }
-
-    private AgentRegistrationDTO deepCopy(AgentRegistrationDTO org) {
-        return AgentRegistrationDTO.builder()
-            .service(org.getService())
-            .serviceInstance(org.getServiceInstance())
-            .jvmVendor(org.getJvmVendor())
-            .jvmVersion(org.getJvmVersion())
-            .runtimeVersion(org.getRuntimeVersion())
-            .networkAddresses(org.getNetworkAddresses().stream()
-                .map(networkAddress -> NetworkAddressDTO.builder()
-                    .hostname(networkAddress.getHostname())
-                    .address(networkAddress.getAddress())
-                    .build()).collect(Collectors.toList()))
-            .build();
-    }
-
 }

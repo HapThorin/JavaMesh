@@ -28,29 +28,29 @@ import com.huawei.sermant.core.plugin.agent.interceptor.AbstractInterceptor;
  * @since 2022-01-22
  */
 public class DemoFieldSetInterceptor extends AbstractInterceptor {
-    private final String localFieldName = "testLocal";
-    private final String memberFieldName = "testMember";
-    private final String staticFieldName = "testStatic";
+    private static final String LOCALFIELDNAME = "testLocal";
+    private static final String MEMEBERFIELDNAME = "testMember";
+    private static final String STATICFIELDNAME = "testStatic";
 
     @Override
     public ExecuteContext before(ExecuteContext context) throws Exception {
-        final Object localField = context.getLocalFieldValue(localFieldName);
+        final Object localField = context.getLocalFieldValue(LOCALFIELDNAME);
         final int newLocalField = localField == null ? 1 : Integer.parseInt(localField.toString()) + 1;
-        context.setLocalFieldValue(localFieldName, newLocalField);
-        final Object memberField = context.getMemberFieldValue(memberFieldName);
+        context.setLocalFieldValue(LOCALFIELDNAME, newLocalField);
+        final Object memberField = context.getMemberFieldValue(MEMEBERFIELDNAME);
         final int newMemberField = memberField == null ? 1 : Integer.parseInt(memberField.toString()) + 1;
-        context.setMemberFieldValue(memberFieldName, newMemberField);
-        final Object staticField = context.getStaticFieldValue(staticFieldName);
+        context.setMemberFieldValue(MEMEBERFIELDNAME, newMemberField);
+        final Object staticField = context.getStaticFieldValue(STATICFIELDNAME);
         final int newStaticField = staticField == null ? 1 : Integer.parseInt(staticField.toString()) + 1;
-        context.setStaticFieldValue(staticFieldName, newStaticField);
+        context.setStaticFieldValue(STATICFIELDNAME, newStaticField);
         return context;
     }
 
     @Override
     public ExecuteContext after(ExecuteContext context) throws Exception {
-        DemoLogger.println("[DemoFieldSetInterceptor]-testLocal: " + context.getLocalFieldValue(localFieldName));
-        DemoLogger.println("[DemoFieldSetInterceptor]-testMember: " + context.getMemberFieldValue(memberFieldName));
-        DemoLogger.println("[DemoFieldSetInterceptor]-testStatic: " + context.getStaticFieldValue(staticFieldName));
+        DemoLogger.println("[DemoFieldSetInterceptor]-testLocal: " + context.getLocalFieldValue(LOCALFIELDNAME));
+        DemoLogger.println("[DemoFieldSetInterceptor]-testMember: " + context.getMemberFieldValue(MEMEBERFIELDNAME));
+        DemoLogger.println("[DemoFieldSetInterceptor]-testStatic: " + context.getStaticFieldValue(STATICFIELDNAME));
         return context;
     }
 }

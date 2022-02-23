@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021-2021 Huawei Technologies Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2022 Huawei Technologies Co., Ltd. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 
 package com.huawei.route.common.gray.label.entity;
 
-import com.huawei.sermant.core.common.LoggerFactory;
 import com.huawei.route.common.gray.constants.GrayConstant;
+import com.huawei.sermant.core.common.LoggerFactory;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
@@ -38,10 +38,10 @@ import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 /**
- * json反序列化
+ * 值匹配反序列化器
  *
- * @author pengyuyi
- * @date 2021/10/27
+ * @author provenceee
+ * @since 2022/2/18
  */
 public class ValueMatchDeserializer implements ObjectDeserializer {
     private static final Logger LOGGER = LoggerFactory.getLogger();
@@ -49,6 +49,7 @@ public class ValueMatchDeserializer implements ObjectDeserializer {
     @Override
     public Map<String, List<MatchRule>> deserialze(DefaultJSONParser parser, Type type, Object fieldName) {
         JSONObject args = parser.parseObject();
+
         // LinkedHashMap用为了保持顺序
         LinkedHashMap<String, List<MatchRule>> matchRuleMap = new LinkedHashMap<String, List<MatchRule>>();
         for (String key : args.keySet()) {
@@ -61,8 +62,7 @@ public class ValueMatchDeserializer implements ObjectDeserializer {
         List<MatchRule> matchRuleList = new ArrayList<MatchRule>();
         List<JSONObject> array = new ArrayList<JSONObject>();
         try {
-            array = args.getObject(key, new TypeReference<ArrayList<JSONObject>>() {
-            });
+            array = args.getObject(key, new JsonObjectTypeReference());
         } catch (JSONException e) {
             array.add(args.getJSONObject(key));
         }
@@ -78,7 +78,7 @@ public class ValueMatchDeserializer implements ObjectDeserializer {
     }
 
     private void setField(MatchRule matchRule, String fieldName, Object value)
-            throws NoSuchFieldException, IllegalAccessException {
+        throws NoSuchFieldException, IllegalAccessException {
         Field field = MatchRule.class.getDeclaredField(fieldName);
         field.setAccessible(true);
         field.set(matchRule, value);
@@ -125,5 +125,11 @@ public class ValueMatchDeserializer implements ObjectDeserializer {
         }
         valueMatch.setMatchStrategy(matchStrategy);
         valueMatch.setValues(values);
+    }
+
+    /**
+     * JSONObject序列化类
+     */
+    public static class JsonObjectTypeReference extends TypeReference<ArrayList<JSONObject>> {
     }
 }

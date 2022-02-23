@@ -48,6 +48,7 @@
             <id>example</id>
             <modules>
                 <module>sermant-example</module>
+                <module>sermant-register-center</module>
             </modules>
         </profile>
         <profile>

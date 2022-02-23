@@ -23,9 +23,6 @@ package com.huawei.gray.feign.context;
  * @since 2021-11-03
  */
 public class CurrentInstance {
-
-    private static CurrentInstance INSTANCE = null;
-
     /**
      * 所属服务名称
      */
@@ -44,24 +41,26 @@ public class CurrentInstance {
     private CurrentInstance() {
     }
 
-    private CurrentInstance(String appName, String ip, int port) {
-        this.appName = appName;
-        this.ip = ip;
-        this.port = port;
-    }
-
     /**
      * 获取实例，仅在启动的时候调用，不存在线程安全问题
      *
+     * @param appName 应用名
+     * @param ip ip
+     * @param port 端口
      */
     public static void newInstance(String appName, String ip, int port) {
-        if (INSTANCE == null) {
-            INSTANCE = new CurrentInstance(appName, ip, port);
-        }
+        SingleTon.CURRENT_INSTANCE.setAppName(appName);
+        SingleTon.CURRENT_INSTANCE.setIp(ip);
+        SingleTon.CURRENT_INSTANCE.setPort(port);
     }
 
+    /**
+     * 获取单例
+     *
+     * @return 单例
+     */
     public static CurrentInstance getInstance() {
-        return INSTANCE;
+        return SingleTon.CURRENT_INSTANCE;
     }
 
     public String getAppName() {
@@ -86,5 +85,9 @@ public class CurrentInstance {
 
     public void setPort(int port) {
         this.port = port;
+    }
+
+    private static class SingleTon {
+        private static final CurrentInstance CURRENT_INSTANCE = new CurrentInstance();
     }
 }

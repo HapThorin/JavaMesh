@@ -27,7 +27,7 @@ import net.bytebuddy.matcher.ElementMatchers;
 /**
  * 增强ClusterUtils类的mergeUrl方法
  *
- * @author pengyuyi
+ * @author provenceee
  * @since 2021年6月28日
  */
 public class ClusterDefinition implements EnhanceDefinition {
@@ -45,7 +45,7 @@ public class ClusterDefinition implements EnhanceDefinition {
     @Override
     public MethodInterceptPoint[] getMethodInterceptPoints() {
         return new MethodInterceptPoint[]{
-                MethodInterceptPoint.newStaticMethodInterceptPoint(INTERCEPT_CLASS,
-                        ElementMatchers.<MethodDescription>named(METHOD_NAME))};
+            MethodInterceptPoint.newStaticMethodInterceptPoint(INTERCEPT_CLASS,
+                ElementMatchers.<MethodDescription>named(METHOD_NAME))};
     }
 }

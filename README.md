@@ -1,4 +1,4 @@
-<img src="docs/binary-docs/sermant-logo.png" width="30%" syt height="530%" />
+<img src="docs/binary-docs/sermant-logo.png" width="25%" syt height="25%" />
 
 ### A proxyless service mesh solution based on Javaagent
 
@@ -20,7 +20,7 @@ As described above, Sermant's Javaagent has two layers of functions.
 
 Sermant's Javaagent widely adopts class isolation technology in order to eliminate the class load conflicts between framework code, plugin code, and application code.
 
-A microservice architecture using Sermant has the following has the following three components, which is depicted in the following diagram.
+A microservice architecture using Sermant has the following three components, which is depicted in the following diagram.
 
 ![pic](docs/binary-docs/sermant-rt-arch.png)
 
@@ -41,15 +41,9 @@ Execute *maven* command to package the **Sermant** project's [demo module](serma
 mvn clean package -Dmaven.test.skip -Pexample
 ```
 
-Execute *maven* command to package the **Sermant** project's [back-end module](sermant-backend).
-
-```shell
-mvn clean package -Dmaven.test.skip -Pbackend
-```
-
 ### Start Sermant
 
-Start **Sermant** backend
+Start **Sermant** backend, **Prepare zookeeper**.
 
 ```shell
 # Run under Linux
@@ -76,7 +70,11 @@ java -cp sermant-plugins\sermant-example\demo-application\target\demo-applicatio
   -javaagent:sermant-agent-x.x.x\agent\sermant-agent.jar=appName=test ^
   com.huawei.example.demo.DemoApplication
 ```
+Check running status of Sermant. In this example, open the browser and navigate to the URL "http://localhost:8900".
 
+<img src="docs/binary-docs/backend_sermant_info.png" width="50%" syt height="50%" />
+
+#### Please refer to the  [Register Plugin QuickStart](docs/QuickStart.md) for details.
 
 ## More documents to follow
 
@@ -85,7 +83,6 @@ Please refer to the  [Development Guide](docs/README.md)
 ## License
 
 Sermant adopts [Apache 2.0 License.](/LICENSE)
-
 
 ## How to contribute
 
