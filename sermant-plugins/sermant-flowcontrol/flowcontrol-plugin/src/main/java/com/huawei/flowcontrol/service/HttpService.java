@@ -17,7 +17,7 @@
 
 package com.huawei.flowcontrol.service;
 
-import com.huawei.flowcontrol.common.entity.FixedResult;
+import com.huawei.flowcontrol.common.entity.FlowControlResult;
 import com.huawei.flowcontrol.common.entity.RequestEntity;
 
 /**
@@ -31,9 +31,9 @@ public interface HttpService {
      * 前置拦截
      *
      * @param requestEntity 请求信息
-     * @param fixedResult 修正结果
+     * @param fixedResult   修正结果
      */
-    void onBefore(RequestEntity requestEntity, FixedResult fixedResult);
+    void onBefore(RequestEntity requestEntity, FlowControlResult fixedResult);
 
     /**
      * 后置方法

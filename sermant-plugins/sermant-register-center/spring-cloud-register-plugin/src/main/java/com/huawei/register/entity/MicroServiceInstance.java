@@ -15,39 +15,56 @@
  *
  */
 
-package com.huawei.flowcontrol.common.entity;
+package com.huawei.register.entity;
+
+import java.util.Map;
 
 /**
- * 修正结果, 该结果确定返回数据
+ * 定义实例信息
  *
  * @author zhouss
- * @since 2022-02-09
+ * @since 2022-02-17
  */
-public class FixedResult {
+public interface MicroServiceInstance {
     /**
-     * 覆盖结果
+     * 服务名
+     *
+     * @return 服务名
      */
-    private Object result;
+    String getServiceName();
 
     /**
-     * 是否需要跳过调用
+     * 域名
+     *
+     * @return host
      */
-    private boolean isSkip = false;
+    String getHost();
 
-    public Object getResult() {
-        return result;
-    }
+    /**
+     * port
+     *
+     * @return 端口
+     */
+    int getPort();
 
-    public void setResult(Object result) {
-        this.result = result;
-        this.isSkip = true;
-    }
+    /**
+     * 服务ID
+     *
+     * @return 服务ID
+     */
+    String getServiceId();
 
-    public boolean isSkip() {
-        return isSkip;
-    }
+    /**
+     * 实例ID
+     *
+     * @return 实例ID
+     */
+    String getInstanceId();
 
-    public void setSkip(boolean isNeedSkip) {
-        this.isSkip = isNeedSkip;
-    }
+    /**
+     * 获取实例的元数据信息
+     *
+     * @return 元数据
+     */
+    Map<String, String> getMeta();
 }

@@ -1,35 +1,36 @@
 /*
- * Copyright (C) 2021-2022 Huawei Technologies Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2022 Huawei Technologies Co., Ltd. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
-package com.huawei.register.handler;
+package com.huawei.flowcontrol.common.handler.listener;
+
+import com.huawei.flowcontrol.common.entity.RequestEntity;
 
 /**
- * 原注册中心状态变更处理
+ * 处理器配置关联请求更新监听器
  *
  * @author zhouss
- * @since 2021-12-30
+ * @since 2022-02-28
  */
-public interface RegisterStateChangeHandler {
+public interface HandlerRequestListener {
     /**
-     * 原注册中心状态变更
+     * 通知配置变更
      *
-     * @param arguments   参数
-     * @param obj         增强对象
-     * @param originState 变更前的状态
-     * @param newState    变更后的状态
+     * @param entity    关联请求
+     * @param updateKey 更新的业务场景
      */
-    void change(Object obj, Object[] arguments, boolean originState, boolean newState);
+    void notify(RequestEntity entity, String updateKey);
 }
